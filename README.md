@@ -60,3 +60,16 @@ to install.
   answer straight into the entry.
 
 Built on the Knot Studio design system.
+
+## Updating it
+
+Push to `main` and GitHub Pages rebuilds in about a minute. Anyone opening
+the link gets the new version; there is nothing to reinstall.
+
+Pages serves files with `max-age=600`, so a browser that already has them
+can show the old version for up to ten minutes. Run `node stamp.js` before
+committing: it puts a timestamp on every local script and stylesheet, so the
+new ones are fetched as soon as the new `index.html` arrives.
+
+Nobody else sees your records. The link gives people the app, not the data —
+each browser keeps its own ledger, encrypted with that person’s own PIN.
