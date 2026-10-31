@@ -1,0 +1,163 @@
+/* Knot Studio — generated from tokens.json. Do not edit directly. */
+@font-face {
+  font-family: "Great Vibes";
+  src: url("fonts/GreatVibes-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Jost";
+  src: url("fonts/Jost-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --linen-50: #f2f1ed;
+  --linen-100: #ecebe8;
+  --linen-200: #d7d5ce;
+  --linen-300: #c2bfb5;
+  --linen-400: #ada89b;
+  --linen-500: #979282;
+  --linen-600: #807b6a;
+  --linen-700: #676255;
+  --linen-800: #4d4a40;
+  --linen-900: #34312b;
+  --sky-50: #f6f7f9;
+  --sky-100: #e9ecef;
+  --sky-200: #dbe0e5;
+  --sky-300: #cbd4de;
+  --sky-400: #a9b8c9;
+  --sky-500: #889cb3;
+  --sky-600: #66809e;
+  --sky-700: #4f657d;
+  --sky-800: #3a4a5b;
+  --sky-900: #252f3a;
+  --berry-50: #f9f6f6;
+  --berry-100: #e8d9db;
+  --berry-200: #d8bcc0;
+  --berry-300: #cd9aa1;
+  --berry-400: #be7c86;
+  --berry-500: #b05f6a;
+  --berry-600: #984b56;
+  --berry-700: #7a3c45;
+  --berry-800: #5d2e34;
+  --berry-900: #3f1f24;
+  --sunrise-50: #fbf6f4;
+  --sunrise-100: #f2e0d9;
+  --sunrise-200: #eacabd;
+  --sunrise-300: #e3b4a1;
+  --sunrise-400: #e5997b;
+  --sunrise-500: #dd7850;
+  --sunrise-600: #d05829;
+  --sunrise-700: #a54620;
+  --sunrise-800: #7a3418;
+  --sunrise-900: #4f2110;
+  --watermelon-50: #faf4f4;
+  --watermelon-100: #ebcfcf;
+  --watermelon-200: #dda9a9;
+  --watermelon-300: #d97979;
+  --watermelon-400: #d05959;
+  --watermelon-500: #c73a3a;
+  --watermelon-600: #a83030;
+  --watermelon-700: #892727;
+  --watermelon-800: #691e1e;
+  --watermelon-900: #4a1515;
+  --surface-100: var(--berry-50);
+  --surface-200: var(--berry-100);
+  --cambridge-50: #f6f9f6;
+  --cambridge-100: #dee8df;
+  --cambridge-200: #c5d8c7;
+  --cambridge-300: #acc8af;
+  --cambridge-400: #8fbc93;
+  --cambridge-500: #71aa76;
+  --cambridge-600: #58945e;
+  --cambridge-700: #47764b;
+  --cambridge-800: #355938;
+  --cambridge-900: #233b25;
+  --card: #ffffff;
+  --line: var(--berry-500);
+  --ink: var(--linen-900);
+  --ink-muted: var(--linen-700);
+  --ink-heading: var(--berry-800);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+  --shadow-soft: 0 2px 10px rgba(74, 63, 53, 0.08);
+  --shadow-lift: 0 10px 28px rgba(74, 63, 53, 0.14);
+  --font-display: "Poppins","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-body: "Poppins","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-script: "Great Vibes", "Segoe Script", cursive;
+  --font-alt: "Jost", "Century Gothic", system-ui, sans-serif;
+  color-scheme: light;
+}
+.nama-xl {
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 0.95;
+  font-weight: 700;
+}
+.nama-lg {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 1.0;
+  font-weight: 700;
+}
+.tajuk {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+.lead {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.7;
+  font-weight: 500;
+}
+.body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.75;
+  font-weight: 400;
+}
+.kecil {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+.angka {
+  font-family: var(--font-display);
+  font-size: 36px;
+  line-height: 1.0;
+  font-weight: 700;
+}
+.nama-script {
+  font-family: var(--font-script);
+  font-size: 56px;
+  line-height: 1.15;
+  font-weight: 400;
+}
+.petikan {
+  font-family: var(--font-script);
+  font-size: 22px;
+  line-height: 1.5;
+  font-weight: 400;
+}

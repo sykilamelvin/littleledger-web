@@ -1,0 +1,3 @@
+# nothing secret here — the app has no server and no credentials
+.DS_Store
+*.log

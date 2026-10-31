@@ -1,0 +1,788 @@
+/* =========================================================================
+   LITTLE LEDGER — built on Knot Studio.
+
+   Loaded after tokens.css and patterns.css. Every value here is a token.
+   The rules from the Knot Studio README are followed as written:
+
+     - Cream (surface-100) carries the page. White (card) is only for things
+       that must read as a separate object: the entry panel, tiles, rows,
+       inputs, the tab bar.
+     - Every surface carries a 1px outline in `line`, which is berry-500.
+     - Shadow is rare. Only the entry panel and the tab bar float.
+     - radius-pill on anything tappable, radius-md on cards, radius-lg on
+       panels, radius-sm on inputs.
+     - One loud thing per screen. sunrise and watermelon are spent once:
+       the commitment-free date, and overspend figures.
+     - berry-500 is an EDGE colour, never text. Text uses ink, ink-muted,
+       berry-600/700, watermelon-600, cambridge-800 — all measured at 4.5:1
+       or better on the surface behind them.
+   ========================================================================= */
+
+/* money in and out, as text — the deeper step of each ramp */
+:root{
+  --wang-keluar:var(--watermelon-600);
+  --wang-masuk:var(--cambridge-800);
+  --wang-simpan:var(--berry-700);
+  --isi-keluar:var(--watermelon-400);   /* fills only, never text */
+  --isi-masuk:var(--cambridge-500);
+  --isi-simpan:var(--berry-500);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--surface-100);color:var(--ink);
+  font-family:var(--font-body);font-size:15px;line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+img{max-width:100%}
+[hidden]{display:none!important}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--berry-600);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.tajuk,.nama-lg,.nama-xl,.angka{margin:0;text-wrap:balance}
+
+/* ------------------------------------------------------------- the shell */
+.app{
+  height:100%;display:flex;flex-direction:column;
+  max-width:560px;margin:0 auto;background:var(--surface-100);
+}
+.atas{
+  flex:0 0 auto;
+  padding:var(--space-4) var(--space-4) var(--space-3);
+  padding-top:calc(var(--space-4) + env(safe-area-inset-top,0px));
+  border-bottom:1px solid var(--line);background:var(--surface-100);
+}
+.atas .nama{
+  margin:0;font-family:var(--font-display);font-size:19px;font-weight:600;
+  color:var(--ink-heading);line-height:1.25;
+}
+
+/* the month runs the full width under the divider, arrows to the edges */
+.jalur-bulan{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+  gap:var(--space-3);
+  padding:var(--space-2) var(--space-4);
+  border-bottom:1px solid var(--line-soft);background:var(--surface-100);
+}
+.jalur-bulan .lbl{
+  flex:1 1 auto;min-width:0;text-align:center;
+  font-family:var(--font-display);font-weight:600;font-size:14px;
+  color:var(--ink);font-variant-numeric:tabular-nums;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+main{
+  flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
+  padding:var(--space-4) var(--space-4) var(--space-6);
+  display:flex;flex-direction:column;gap:var(--space-4);
+}
+.pane{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+
+/* ------------------------------------------------------------- icon button */
+.ikon{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  border:1px solid var(--line);border-radius:var(--radius-pill);
+  background:var(--card);color:var(--line);
+  width:36px;height:36px;padding:0;
+}
+.ikon svg{width:18px;height:18px}
+.ikon.sm{width:30px;height:30px} .ikon.sm svg{width:16px;height:16px}
+.ikon.lg{width:44px;height:44px} .ikon.lg svg{width:20px;height:20px}
+.ikon:hover,.ikon:focus-visible{background:var(--berry-600);color:#fff;border-color:transparent}
+.ikon.bahaya:hover,.ikon.bahaya:focus-visible{background:var(--watermelon-600)}
+.ikon:disabled{opacity:.4;cursor:default}
+.ikon:disabled:hover{background:var(--card);color:var(--line);border-color:var(--line)}
+
+/* ------------------------------------------------------------- text button */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
+  min-height:46px;padding:0 var(--space-5);
+  border-radius:var(--radius-pill);border:1px solid var(--berry-600);
+  background:transparent;color:var(--berry-600);
+  font-family:var(--font-body);font-size:11px;font-weight:600;
+  letter-spacing:.18em;text-transform:uppercase;
+}
+.btn svg{width:18px;height:18px}
+.btn:hover,.btn:focus-visible{background:var(--berry-100)}
+.btn.utama{background:var(--berry-600);color:#fff;border-color:var(--berry-600)}
+.btn.utama:hover,.btn.utama:focus-visible{background:var(--berry-700);border-color:var(--berry-700)}
+.btn.bahaya{border-color:var(--watermelon-600);color:var(--watermelon-600)}
+.btn.bahaya:hover,.btn.bahaya:focus-visible{background:var(--watermelon-600);color:#fff}
+.btn.kecilbtn{min-height:38px;padding:0 var(--space-4);letter-spacing:.12em}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:disabled:hover{background:transparent;color:var(--berry-600)}
+.btn.utama:disabled:hover{background:var(--berry-600);color:#fff}
+
+/* ------------------------------------------------------------ panels, cards */
+.panel{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:var(--space-5);min-width:0;
+}
+.kad{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-md);padding:var(--space-4);min-width:0;
+}
+.kad > .label,.panel > .label{
+  display:block;text-transform:uppercase;color:var(--ink-muted);
+  margin-bottom:var(--space-3);
+}
+.lede{margin:0 0 var(--space-3);color:var(--ink-muted)}
+.nota{margin:0;color:var(--ink-muted)}
+
+/* ------------------------------------------------------- the entry panel */
+/* The one thing on the page that floats. */
+.masuk{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-soft);
+}
+.masuk .jumlah{display:flex;align-items:center;gap:var(--space-3);
+  padding:var(--space-5) var(--space-5) var(--space-2)}
+.masuk .rm{font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--ink-muted)}
+.masuk .jumlah input{
+  flex:1;min-width:0;border:0;background:none;padding:0;
+  font-family:var(--font-display);font-size:38px;font-weight:700;line-height:1.1;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+}
+.masuk .jumlah input::placeholder{color:var(--berry-200)}
+.masuk .jumlah input:focus{outline:none}
+.masuk .nota-masuk{
+  display:block;width:100%;border:0;border-top:1px solid var(--berry-200);
+  background:none;padding:var(--space-3) var(--space-5);font-size:16px;
+}
+.masuk .nota-masuk:focus{outline:none;background:var(--surface-100)}
+.teka{
+  display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;
+  padding:var(--space-3) var(--space-5);min-height:52px;
+  border-top:1px solid var(--berry-200);background:var(--surface-100);
+}
+.teka .kecil{color:var(--ink-muted)}
+.teka select{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-pill);padding:6px var(--space-3);font-size:13px;max-width:100%;
+}
+.masuk .hantar{
+  display:block;width:100%;border:0;border-top:1px solid var(--line);
+  background:var(--berry-600);color:#fff;
+  font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+  padding:var(--space-4);min-height:46px;
+}
+.masuk .hantar:hover:not(:disabled){background:var(--berry-700)}
+.masuk .hantar:disabled{opacity:.45;cursor:default}
+
+/* ----------------------------------------------------------------- tiles */
+.petak{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);
+  border-radius:var(--radius-md);overflow:hidden;
+}
+.petak > div{background:var(--card);padding:var(--space-3) var(--space-3);min-width:0}
+.petak .label{display:block;text-transform:uppercase;color:var(--ink-muted);font-size:10px}
+.petak .nilai{
+  font-family:var(--font-display);font-size:18px;font-weight:600;
+  margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.petak .keluar{color:var(--wang-keluar)}
+.petak .masuk-w{color:var(--wang-masuk)}
+.petak .simpan{color:var(--wang-simpan)}
+
+/* -------------------------------------------------------- category bars */
+.bar{display:grid;grid-template-columns:1fr auto;gap:2px var(--space-3);align-items:baseline}
+.bar + .bar{margin-top:var(--space-3)}
+.bar .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13.5px}
+.bar .vl{font-size:12px;color:var(--ink-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar .track{
+  grid-column:1/-1;height:6px;border-radius:var(--radius-pill);
+  background:var(--surface-200);overflow:hidden;
+}
+.bar .fill{height:100%;border-radius:var(--radius-pill);background:var(--isi-simpan)}
+
+/* what sits inside a category — indented, quieter, hung off a berry hairline */
+.dalam{
+  margin:var(--space-2) 0 var(--space-4) var(--space-3);
+  padding-left:var(--space-3);
+  border-left:1px solid var(--berry-200);
+  display:flex;flex-direction:column;gap:var(--space-2);
+}
+.dalam:last-child{margin-bottom:0}
+.subbar{display:grid;grid-template-columns:1fr auto;gap:2px var(--space-3);align-items:baseline}
+.subbar .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:12.5px;color:var(--ink-muted)}
+.subbar .nm i{font-style:normal;color:var(--berry-600);font-size:11px}
+.subbar .vl{font-size:11.5px;color:var(--ink-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.subbar .track{grid-column:1/-1;height:3px;border-radius:var(--radius-pill);
+  background:var(--surface-200);overflow:hidden}
+.subbar .fill{height:100%;border-radius:var(--radius-pill);opacity:.55}
+
+/* --------------------------------------------------------------- history */
+.hari{
+  border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;
+  background:var(--line);display:flex;flex-direction:column;gap:1px;
+}
+.hari + .hari{margin-top:var(--space-3)}
+.hari .kepala{
+  background:var(--surface-100);padding:var(--space-2) var(--space-4);
+  display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);
+}
+.hari .kepala .t{font-family:var(--font-display);font-weight:500;font-size:13px}
+.hari .kepala .j{font-size:12px;color:var(--ink-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.baris{
+  background:var(--card);border:0;width:100%;text-align:left;
+  display:grid;grid-template-columns:1fr auto;gap:2px var(--space-3);align-items:center;
+  padding:var(--space-3) var(--space-4);
+}
+.baris:hover{background:var(--surface-100)}
+.baris .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14.5px}
+.baris .a{
+  font-family:var(--font-display);font-weight:600;font-size:15px;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.baris .a.out{color:var(--wang-keluar)}
+.baris .a.in{color:var(--wang-masuk)}
+.baris .a.save{color:var(--wang-simpan)}
+.baris .meta{grid-column:1/-1;display:flex;gap:var(--space-2);align-items:center;
+  flex-wrap:wrap;margin-top:3px}
+.sunting{
+  background:var(--surface-100);padding:var(--space-3) var(--space-4);
+  display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;
+}
+.sunting select{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-sm);padding:7px var(--space-3);font-size:13.5px;max-width:100%;
+}
+
+/* ------------------------------------------------------ goals, commitments */
+.perkara{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3);min-width:0;
+}
+.perkara + .perkara{margin-top:var(--space-3)}
+.perkara.selesai{border-color:var(--berry-200)}
+.perkara .kepala{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3)}
+.perkara .tajuk-p{
+  font-family:var(--font-display);font-size:16.5px;font-weight:600;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.perkara .kira{font-size:12px;color:var(--ink-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.perkara .baki{display:flex;align-items:baseline;justify-content:space-between;
+  gap:var(--space-1) var(--space-4);flex-wrap:wrap;font-size:13px;color:var(--ink-muted)}
+.perkara .perlu{font-weight:600;color:var(--ink)}
+.perkara .lewat{color:var(--wang-keluar);font-weight:600}
+.perkara .sudah{color:var(--wang-masuk);font-weight:600}
+.perkara .tindakan{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center}
+.perkara .ubah{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.perkara .ubah label{
+  flex:1 1 120px;min-width:0;display:flex;flex-direction:column;gap:4px;
+  font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);
+}
+
+/* ------------------------------------------------------------------ input */
+.medan{display:flex;flex-direction:column;gap:5px;margin-bottom:var(--space-3);min-width:0}
+.medan > span{font-size:10px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-muted)}
+input[type=text],input[type=date],select,.perkara .ubah input{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:10px var(--space-3);width:100%;font-variant-numeric:tabular-nums;
+}
+/* The native select arrow is a black system glyph. It is replaced by the
+   chevron-down from icons.js, drawn in berry-500 — the same glyph and the same
+   colour the quiet icon buttons use. It is a background image, so the stroke
+   colour has to be literal here; it is berry-500 and nothing else. */
+select{
+  appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23b05f6a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>');
+  background-repeat:no-repeat;
+  background-position:right var(--space-3) center;
+  background-size:16px 16px;
+  padding-right:calc(var(--space-3) * 2 + 16px);
+}
+select::-ms-expand{display:none}
+.teka select{background-position:right var(--space-2) center;padding-right:28px}
+
+/* A field already carries the berry-500 line, so focus must not draw a second
+   ring outside it. It deepens the line it has and thickens it inward instead —
+   still clearly focused, but one border, not two. */
+input:focus,select:focus,textarea:focus,
+input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:none;
+  border-color:var(--berry-700);
+  box-shadow:inset 0 0 0 1px var(--berry-700);
+}
+/* The entry panel's two fields have no box of their own — the note field's
+   top border is the panel's divider, so only the ring is cleared here. */
+.masuk .jumlah input:focus,.masuk .nota-masuk:focus{box-shadow:none}
+.baris-medan{display:flex;gap:var(--space-3);flex-wrap:wrap}
+.baris-medan .medan{flex:1 1 130px}
+
+/* ---------------------------------------------------------------- accounts */
+.akaun{
+  display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;
+  padding:var(--space-3) 0;border-bottom:1px solid var(--berry-200);
+}
+.akaun:last-of-type{border-bottom:0}
+.akaun .nm{flex:1 1 100px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.akaun input{width:7.6em;text-align:right}
+
+/* ------------------------------------------------------------------ plan */
+.besar{
+  font-family:var(--font-display);font-weight:700;font-size:30px;
+  color:var(--ink-heading);font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+.besar.kurang{color:var(--wang-keluar)}
+.kiraan{display:flex;flex-direction:column;gap:var(--space-2);margin-bottom:var(--space-4)}
+.kiraan .b{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3)}
+.kiraan .b span:first-child{font-size:13.5px;color:var(--ink-muted);min-width:0}
+.kiraan .b span:last-child{font-variant-numeric:tabular-nums;font-size:13.5px;white-space:nowrap}
+.kiraan .tolak{color:var(--wang-keluar)}
+.kiraan .tambah{color:var(--wang-masuk)}
+.kiraan .garis{border-top:1px solid var(--berry-200);margin-top:var(--space-1);padding-top:var(--space-2)}
+
+/* the one loud thing: what April 2027 is worth */
+.loud{
+  background:var(--sunrise-100);border:1px solid var(--sunrise-400);
+  border-radius:var(--radius-md);padding:var(--space-4);color:var(--ink);font-size:13.5px;
+}
+.loud b{color:var(--ink-heading)}
+
+/* ------------------------------------------------------------- keyword list */
+.senarai{display:flex;flex-wrap:wrap;gap:var(--space-2);max-height:200px;overflow-y:auto;padding:2px}
+.senarai.penuh{max-height:none}
+.kunci{
+  display:inline-flex;align-items:center;gap:var(--space-2);
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-pill);
+  padding:4px 4px 4px var(--space-3);font-size:12.5px;
+}
+.kunci i{font-style:normal;color:var(--ink-muted);font-size:11.5px}
+.kunci button{
+  border:0;background:none;color:var(--line);line-height:0;padding:4px;
+  border-radius:var(--radius-pill);display:inline-flex;
+}
+.kunci button svg{width:13px;height:13px}
+.kunci button:hover{background:var(--watermelon-600);color:#fff}
+
+/* ------------------------------------------------------------------ states */
+.kosong{text-align:center;padding:var(--space-6) var(--space-4);color:var(--ink-muted)}
+.kosong .tajuk{font-size:17px;color:var(--ink);margin-bottom:var(--space-2);font-weight:600}
+.kosong p{margin:0 auto;max-width:34ch}
+.amaran{
+  background:var(--watermelon-100);color:var(--watermelon-600);
+  border:1px solid var(--watermelon-600);
+  border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);font-size:13px;
+}
+
+/* -------------------------------------------------------------- tab bar */
+.tab{
+  flex:0 0 auto;display:grid;grid-template-columns:repeat(5,1fr);
+  border-top:1px solid var(--line);background:var(--card);
+  padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:var(--shadow-soft);
+}
+.tab button{
+  border:0;background:none;padding:var(--space-3) 2px var(--space-3);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  color:var(--ink-muted);font-size:10px;font-weight:500;letter-spacing:.04em;
+}
+.tab button svg{width:20px;height:20px}
+.tab button[aria-selected="true"]{color:var(--berry-600);font-weight:600}
+
+/* ------------------------------------------------------------- scrollbar */
+/* The grey Windows scrollbar with its arrow buttons is replaced by one in
+   the system's own terms: a cream track with the berry-500 outer line, and
+   a pill thumb outlined in the same colour. Berry-500 is the edge here too,
+   never a fill on its own, so the thumb is a lighter step inside that line. */
+*{scrollbar-width:thin;scrollbar-color:var(--berry-300) var(--surface-100)}
+
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{
+  background:var(--surface-100);
+  border-left:1px solid var(--line);     /* the outer line */
+}
+::-webkit-scrollbar-thumb{
+  background:var(--berry-200);
+  border:1px solid var(--line);
+  background-clip:padding-box;           /* keeps the line crisp over the fill */
+  border-radius:var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover{background:var(--berry-300)}
+::-webkit-scrollbar-thumb:active{background:var(--berry-400)}
+/* no arrow buttons, and no grey square where two bars meet */
+::-webkit-scrollbar-button{display:none;width:0;height:0}
+::-webkit-scrollbar-corner{background:var(--surface-100)}
+
+/* horizontal scrollers inside a white card sit on the card, not the page */
+.senarai::-webkit-scrollbar-track{background:var(--card);border-left:1px solid var(--line)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* =========================================================================
+   CALCULATOR — a float button in the corner and a bottom sheet.
+   Per the Button part: float is 56px with a 24px icon, fixed to a corner.
+   Per Shape and depth: a sheet is radius-lg and genuinely floats, so it is
+   one of the few things allowed shadow-lift.
+   ========================================================================= */
+.apung{
+  position:fixed;right:var(--space-4);
+  bottom:calc(76px + var(--space-4) + env(safe-area-inset-bottom,0px));
+  width:56px;height:56px;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);border-radius:var(--radius-pill);
+  background:var(--berry-600);color:#fff;
+  box-shadow:var(--shadow-lift);z-index:40;
+}
+.apung svg{width:24px;height:24px}
+.apung:hover,.apung:focus-visible{background:var(--berry-700)}
+
+.tirai{
+  position:fixed;inset:0;background:rgba(52,49,43,.42);
+  z-index:50;animation:lembut .16s ease-out;
+}
+@keyframes lembut{from{opacity:0}to{opacity:1}}
+
+.helai{
+  position:fixed;left:50%;transform:translateX(-50%);
+  bottom:0;width:min(560px,100%);max-height:92dvh;overflow-y:auto;z-index:51;
+  background:var(--card);border:1px solid var(--line);border-bottom:0;
+  border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow:var(--shadow-lift);
+  padding:var(--space-5) var(--space-4)
+          calc(var(--space-5) + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;gap:var(--space-4);
+}
+.helai-atas{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3)}
+.helai-atas .tajuk{font-size:18px;font-weight:600;color:var(--ink-heading)}
+
+/* display */
+.papar{
+  border:1px solid var(--line);border-radius:var(--radius-md);
+  background:var(--surface-100);padding:var(--space-3) var(--space-4);
+  display:flex;flex-direction:column;gap:var(--space-1);
+}
+.papar input{
+  border:0;background:none;padding:0;width:100%;
+  font-family:var(--font-display);font-size:17px;font-weight:400;
+  font-variant-numeric:tabular-nums;color:var(--ink-muted);
+}
+.papar input:focus{outline:none;box-shadow:none}
+.papar .hasil{
+  font-family:var(--font-display);font-size:30px;font-weight:700;line-height:1.15;
+  color:var(--ink-heading);font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.papar .hasil.salah{font-size:15px;font-weight:500;color:var(--watermelon-600)}
+
+.pintas{display:flex;gap:var(--space-2);flex-wrap:wrap}
+
+/* keypad */
+.kekunci{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-2)}
+.kekunci button{
+  min-height:48px;border:1px solid var(--line);border-radius:var(--radius-pill);
+  background:var(--card);color:var(--ink);
+  font-family:var(--font-display);font-size:17px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;
+}
+.kekunci button:hover,.kekunci button:focus-visible{background:var(--berry-100)}
+.kekunci button.op{color:var(--berry-700)}
+.kekunci button.kosongkan{color:var(--watermelon-600)}
+.kekunci button.sama{background:var(--berry-600);color:#fff;border-color:var(--berry-600)}
+.kekunci button.sama:hover{background:var(--berry-700)}
+
+.helai-tindakan{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.helai-tindakan .btn{flex:1 1 140px}
+
+/* history */
+.rekod-kira{border-top:1px solid var(--berry-200);padding-top:var(--space-3)}
+.rekod-kepala{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);
+  margin-bottom:var(--space-2)}
+.rekod-kepala .label{text-transform:uppercase;color:var(--ink-muted)}
+.kira-baris{
+  width:100%;text-align:left;background:none;border:0;
+  border-bottom:1px solid var(--berry-200);
+  padding:var(--space-2) 0;display:flex;align-items:baseline;
+  justify-content:space-between;gap:var(--space-3);
+}
+.kira-baris:last-child{border-bottom:0}
+.kira-baris:hover{background:var(--surface-100)}
+.kira-baris .e{font-size:12.5px;color:var(--ink-muted);min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+.kira-baris .r{font-family:var(--font-display);font-weight:600;font-size:14px;
+  color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* When the window is wide enough that the 560px column leaves a gutter, the
+   calculator stops being a bottom sheet and becomes a panel in that gutter:
+   anchored to the right edge of the app, sitting above the float button.
+   No veil then — the point of putting it there is to keep the ledger visible
+   and usable while you work something out.
+   The breakpoint is where 560 + gap + 340 + gap actually fits. */
+/* The calculator is a popup pinned to the corner it is launched from, just
+   above the float button, on anything bigger than a phone. No veil: the
+   ledger stays visible and usable while you work a number out.
+   On a phone there is no corner to spare, so it stays a bottom sheet. */
+@media (min-width: 720px) {
+  .tirai{display:none}
+  .apung{bottom:var(--space-5)}
+  .helai{
+    left:auto;right:var(--space-4);transform:none;
+    bottom:calc(var(--space-5) + 56px + var(--space-3));
+    width:min(340px, calc(100vw - var(--space-4) * 2));
+    max-height:calc(100dvh - 160px);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:var(--space-4);
+  }
+  .helai .kekunci button{min-height:42px;font-size:16px}
+  .helai .papar .hasil{font-size:26px}
+}
+
+/* =========================================================================
+   FIRST FLOW — the amount on the left, what it is on the right.
+   Shown once, until there is a salary or an account to work from.
+   ========================================================================= */
+.mula{display:flex;flex-direction:column;gap:var(--space-4)}
+.mula-baris{
+  display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr);
+  gap:var(--space-3);align-items:center;
+}
+.wang{
+  display:flex;align-items:center;gap:var(--space-2);min-width:0;
+  border:1px solid var(--line);border-radius:var(--radius-sm);
+  background:var(--card);padding:9px var(--space-3);
+}
+.wang .rm{font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--ink-muted)}
+.wang input{
+  flex:1;min-width:0;border:0;padding:0;background:none;width:100%;
+  font-family:var(--font-display);font-size:18px;font-weight:600;
+  font-variant-numeric:tabular-nums;
+}
+.wang input:focus{outline:none;box-shadow:none}
+.wang:focus-within{border-color:var(--berry-700);box-shadow:inset 0 0 0 1px var(--berry-700)}
+.mula-baris .apa{font-size:13.5px;color:var(--ink-muted);min-width:0}
+.mula-tindakan{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center}
+@media (max-width:380px){
+  .mula-baris{grid-template-columns:minmax(0,8em) minmax(0,1fr)}
+  .mula-baris .apa{font-size:12.5px}
+}
+
+/* the inline editor's "what for" field */
+.sunting .apa-isi{
+  flex:1 1 160px;min-width:0;width:auto;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:7px var(--space-3);font-size:13.5px;
+}
+
+/* =========================================================================
+   THE MONTHS AHEAD — a compact forward ledger, one row per month.
+   ========================================================================= */
+.hadapan-senarai{margin-top:var(--space-4);display:flex;flex-direction:column}
+.bulan-baris{
+  display:grid;
+  grid-template-columns:minmax(0,1.3fr) repeat(4, minmax(0,1fr));
+  gap:2px var(--space-2);align-items:baseline;
+  padding:var(--space-2) 0;border-bottom:1px solid var(--berry-200);
+  font-variant-numeric:tabular-nums;
+}
+.bulan-baris:last-child{border-bottom:0}
+.bulan-baris .bl{font-size:12.5px;font-weight:500;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bulan-baris .kol{font-size:12px;text-align:right;color:var(--ink-muted);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.bulan-baris .kol.kiri{color:var(--ink);font-weight:500}
+.bulan-baris .kol.simpan{color:var(--wang-simpan)}
+.bulan-baris .kol.jumlah{color:var(--ink-heading);font-weight:600}
+.bulan-baris.kurang .kol.kiri{color:var(--wang-keluar)}
+.bulan-baris.kepala-baris{
+  border-bottom:1px solid var(--line);padding-bottom:var(--space-2);
+}
+.bulan-baris.kepala-baris span{
+  font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-muted);
+}
+.bulan-baris .tanda{
+  grid-column:1/-1;margin-top:var(--space-1);
+  font-size:11.5px;color:var(--berry-700);font-variant-numeric:normal;
+}
+.mula-baris .apa i{font-style:normal;color:var(--ink-muted);opacity:.8}
+@media (max-width:420px){
+  .bulan-baris{grid-template-columns:minmax(0,1.2fr) repeat(4, minmax(0,1fr));gap:2px 4px}
+  .bulan-baris .kol{font-size:11px}
+}
+
+/* =========================================================================
+   THE PLANNER — the month decided up front, then spent down.
+   This is the first thing on the Log tab, so it is the one panel that
+   carries the soft shadow; the entry form below it keeps only its outline.
+   ========================================================================= */
+.pelan{display:flex;flex-direction:column;gap:var(--space-3);box-shadow:var(--shadow-soft)}
+.pelan-atas{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3)}
+.pelan-atas .label{text-transform:uppercase;color:var(--ink-muted);margin:0}
+.pelan-atas .kecil{color:var(--ink-muted);white-space:nowrap}
+.pelan-besar{
+  font-family:var(--font-display);font-weight:700;font-size:38px;line-height:1.05;
+  color:var(--ink-heading);font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+}
+.pelan-besar.kurang{color:var(--wang-keluar)}
+.pelan-track{height:8px;border-radius:var(--radius-pill);background:var(--surface-200);overflow:hidden}
+.pelan-fill{height:100%;border-radius:var(--radius-pill);background:var(--isi-simpan);
+  width:0%;transition:width .35s ease}
+.pelan-fill.kurang{background:var(--isi-keluar)}
+.pelan-kira{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-1)}
+.pl-b{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3)}
+.pl-b span:first-child{font-size:13px;color:var(--ink-muted);min-width:0}
+.pl-b span:last-child{font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pl-b .tolak{color:var(--wang-keluar)}
+.pl-b .tambah{color:var(--wang-masuk)}
+.pl-b .kuat{font-weight:600;color:var(--ink);font-size:14px}
+.pl-b.garis{border-top:1px solid var(--berry-200);padding-top:var(--space-2);margin-top:var(--space-1)}
+.pl-b.garis span:first-child{color:var(--ink);font-weight:500;font-size:13.5px}
+
+/* ------------------------------------------------------------------ ideas */
+.ideas{display:flex;flex-direction:column}
+#idea-list{display:flex;flex-direction:column;gap:var(--space-4)}
+.idea{display:flex;flex-direction:column;gap:4px}
+.idea + .idea{border-top:1px solid var(--berry-200);padding-top:var(--space-4)}
+.idea-t{font-family:var(--font-display);font-size:14.5px;font-weight:600;color:var(--ink-heading)}
+.idea-b{margin:0;font-size:13px;line-height:1.6;color:var(--ink-muted)}
+
+/* numbers you type straight into the planner */
+.pl-medan{
+  display:inline-flex;align-items:baseline;gap:4px;
+  border-bottom:1px dashed var(--line);padding-bottom:1px;
+}
+.pl-medan .rm{font-size:11px;color:var(--ink-muted);font-weight:500}
+.pl-medan input{
+  width:5.4em;border:0;background:none;padding:0;text-align:right;
+  font-family:var(--font-body);font-size:13px;font-weight:600;color:inherit;
+  font-variant-numeric:tabular-nums;
+}
+.pl-medan input:focus{outline:none;box-shadow:none}
+.pl-medan:focus-within{border-bottom-color:var(--berry-700);border-bottom-style:solid}
+.pl-medan input::placeholder{color:var(--berry-300);font-weight:400}
+.pl-pautan{
+  border:0;background:none;padding:0;color:inherit;font:inherit;
+  text-decoration:underline;text-decoration-style:dotted;
+  text-underline-offset:3px;cursor:pointer;
+}
+.pl-pautan:hover{color:var(--berry-700)}
+.pelan-besar.sunyi{color:var(--berry-300)}
+
+/* a fixed monthly cost is not a debt: quieter edge, sky rather than berry */
+.perkara.tetap-kad{border-color:var(--sky-400)}
+.perkara .tetap{color:var(--sky-700);font-weight:600}
+
+/* =========================================================================
+   THE WELCOME SCREEN
+   ========================================================================= */
+body.terkunci{overflow:hidden}
+.gerbang{
+  position:fixed;inset:0;z-index:100;
+  background:var(--surface-100);
+  display:flex;align-items:center;justify-content:center;
+  padding:var(--space-4);overflow-y:auto;
+}
+.gerbang-kad{
+  width:min(380px,100%);
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-lift);
+  padding:var(--space-6) var(--space-5);
+  display:flex;flex-direction:column;gap:var(--space-3);
+}
+.gerbang-tanda{
+  font-family:var(--font-display);font-size:11px;font-weight:600;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--berry-600);
+}
+.gerbang-kad .tajuk{font-size:22px;font-weight:600;color:var(--ink-heading);margin:0}
+.gerbang-kad .lede{margin:0 0 var(--space-2)}
+.gerbang-kad .medan{margin-bottom:0}
+.gerbang-kad .medan > span{font-size:10px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-muted)}
+.gerbang-kad .btn{width:100%}
+.gerbang-kad .btn.kecilbtn{border-color:transparent;color:var(--ink-muted);letter-spacing:.06em}
+.gerbang-kad .btn.kecilbtn:hover{background:transparent;color:var(--berry-700)}
+
+/* six boxes that behave like one field */
+.pin-kotak{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--space-2)}
+.pin-kotak input{
+  width:100%;aspect-ratio:1;text-align:center;padding:0;
+  border:1px solid var(--line);border-radius:var(--radius-sm);
+  background:var(--card);
+  font-family:var(--font-display);font-size:20px;font-weight:600;
+}
+.pin-kotak input:focus{outline:none;border-color:var(--berry-700);
+  box-shadow:inset 0 0 0 1px var(--berry-700)}
+
+.siapa{
+  font-size:11.5px;color:var(--ink-muted);max-width:9em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+/* the account card in Settings */
+.akaun-siapa{display:flex;align-items:center;justify-content:space-between;
+  gap:var(--space-3);flex-wrap:wrap}
+.akaun-nama{font-family:var(--font-display);font-size:16px;font-weight:600;color:var(--ink)}
+
+/* The chip is 52px; the glyph sits at 22px inside it. Without this an SVG
+   with no width of its own expands to the whole chip. */
+.stat .chip span{width:22px;height:22px}
+.stat .chip svg{width:22px;height:22px;display:block}
+
+/* the key under the forecast heading */
+.petunjuk{
+  margin:var(--space-3) 0 0;font-size:11.5px;line-height:1.7;color:var(--ink-muted);
+}
+.petunjuk b{color:var(--ink);font-weight:600}
+/* let the column headings wrap now that they are words, not abbreviations */
+.bulan-baris.kepala-baris span{white-space:normal;line-height:1.25}
+
+/* ------------------------------------------------ the bill list in the planner */
+.pl-tajuk{
+  font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-muted);margin-top:var(--space-2);
+  padding-top:var(--space-2);border-top:1px solid var(--berry-200);
+}
+.pl-b.bil{padding-left:var(--space-2)}
+.pl-b.bil .bil-nama{
+  font-size:13px;color:var(--ink);min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.pl-b.jumlah-bil{
+  border-top:1px solid var(--berry-200);padding-top:var(--space-2);margin-top:var(--space-1);
+}
+.pl-b.jumlah-bil span:first-child{font-weight:600;color:var(--ink);font-size:13.5px}
+.pl-b.jumlah-bil span:last-child{font-weight:600;font-size:13.5px}
+.pl-tambah{
+  align-self:flex-start;border:0;background:none;padding:var(--space-1) 0;
+  color:var(--berry-600);font:inherit;font-size:12.5px;font-weight:500;
+  text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;
+}
+.pl-tambah:hover{color:var(--berry-700)}
+.pl-borang{
+  display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;
+  padding:var(--space-3);margin-top:var(--space-2);
+  background:var(--surface-100);border:1px solid var(--line);border-radius:var(--radius-sm);
+}
+.pl-borang input#pl-nama{flex:1 1 140px;min-width:0;width:auto;
+  border:1px solid var(--line);border-radius:var(--radius-sm);
+  background:var(--card);padding:7px var(--space-3);font-size:13.5px}
+.pl-borang .pl-medan{border-bottom-style:solid}
+
+/* ------------------------------------------------------- tick a bill as paid */
+.pl-b.bil{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;
+  gap:var(--space-2);align-items:center;padding-left:0;
+}
+.tik{
+  width:22px;height:22px;flex:0 0 auto;padding:0;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);border-radius:var(--radius-sm);
+  background:var(--card);color:transparent;
+}
+.tik svg{width:14px;height:14px}
+.tik:hover{border-color:var(--berry-700);background:var(--berry-100)}
+.tik.on{background:var(--cambridge-600);border-color:var(--cambridge-600);color:#fff}
+.tik.on:hover{background:var(--cambridge-700);border-color:var(--cambridge-700)}
+.pl-b.bil.dibayar .bil-nama{color:var(--ink-muted)}
+.pl-b.bil.dibayar .pl-medan{opacity:.65}
+.pl-b.jumlah-bil i{
+  font-style:normal;font-weight:500;font-size:11px;color:var(--ink-muted);
+  letter-spacing:.02em;
+}

@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Little Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="patterns.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<div class="app">
+  <header class="atas">
+    <h1 class="nama" id="appname">Little Ledger</h1>
+  </header>
+
+  <div class="jalur-bulan" id="jalur">
+    <button class="ikon sm" id="mprev" type="button" title="Previous month" aria-label="Previous month"></button>
+    <span class="lbl" id="mlbl">&nbsp;</span>
+    <button class="ikon sm" id="mnext" type="button" title="Next month" aria-label="Next month"></button>
+  </div>
+
+  <main>
+    <div id="bootnote" class="amaran" hidden></div>
+
+    <!-- LOG -->
+    <section id="p-log" class="pane">
+      <section class="panel pelan" id="planner">
+        <div class="pelan-atas">
+          <span class="label">Left to spend</span>
+          <span class="kecil" id="pl-hari"></span>
+        </div>
+        <div class="pelan-besar" id="pl-left">&mdash;</div>
+        <div class="pelan-track"><div class="pelan-fill" id="pl-fill"></div></div>
+        <div class="pelan-kira" id="pl-rows"></div>
+      </section>
+
+      <form class="masuk" id="entryform">
+        <div class="jumlah">
+          <span class="rm">RM</span>
+          <input id="e-amt" type="text" inputmode="decimal" placeholder="0.00" autocomplete="off" aria-label="Amount">
+        </div>
+        <input class="nota-masuk" id="e-note" type="text" autocomplete="off" aria-label="What it was for"
+               placeholder="What for? e.g. nasi lemak, petrol, salary">
+        <div class="teka" id="e-guess" hidden></div>
+        <button class="hantar" type="submit" id="e-go" disabled>Save</button>
+      </form>
+
+
+      <section class="kad ideas" id="ideas" hidden>
+        <span class="label">Making it last</span>
+        <div id="idea-list"></div>
+      </section>
+
+      <div class="kad">
+        <span class="label">Spending by category</span>
+        <div id="catbars"><p class="nota kecil">Loading&hellip;</p></div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="p-history" class="pane" hidden>
+      <div id="historylist"><div class="kosong"><p class="body">Loading records&hellip;</p></div></div>
+    </section>
+
+    <!-- DEBTS -->
+    <section id="p-debts" class="pane" hidden>
+      <div class="stat">
+        <span class="chip is-sun" id="debtchip"></span>
+        <h3 id="freedate">&mdash;</h3>
+        <p class="kecil" id="freesub">Add what you owe each month to see this.</p>
+        <div class="progress" id="debtprog" hidden>
+          <div class="atas"><span>Paid so far</span><b id="debtpct">0%</b></div>
+          <div class="track"><div class="fill" id="debtfill" style="width:0%"></div></div>
+          <div class="bawah"><span id="debtleft"></span><span id="debtmonths"></span></div>
+        </div>
+      </div>
+
+      <div class="petak">
+        <div><span class="label">Per month</span><div class="nilai keluar" id="c-month">&mdash;</div></div>
+        <div><span class="label">Left to pay</span><div class="nilai" id="c-total">&mdash;</div></div>
+        <div><span class="label">Paid this month</span><div class="nilai simpan" id="c-paid">&mdash;</div></div>
+      </div>
+
+      <div id="commitlist"></div>
+
+      <details class="kad" id="newcommit">
+        <summary class="tajuk" style="font-size:15px">Add a commitment</summary>
+        <div style="margin-top:var(--space-4)">
+          <label class="medan"><span>Name</span>
+            <input id="n-name" type="text" placeholder="e.g. Atome, PTPTN"></label>
+          <div class="baris-medan">
+            <label class="medan"><span>Per month (RM)</span>
+              <input id="n-monthly" type="text" inputmode="decimal" placeholder="150"></label>
+            <label class="medan"><span>Last payment</span>
+              <input id="n-end" type="date" value="2027-03-31"></label>
+          </div>
+          <label class="medan"><span>Log payments under</span><select id="n-cat"></select></label>
+          <button class="btn utama" id="n-add" type="button">Add</button>
+        </div>
+      </details>
+    </section>
+
+    <!-- SAVINGS -->
+    <section id="p-savings" class="pane" hidden>
+      <div class="panel">
+        <span class="label">Where to start</span>
+        <div class="mula">
+          <div class="mula-baris">
+            <div class="wang"><span class="rm">RM</span>
+              <input id="s-income" type="text" inputmode="decimal" placeholder="0.00"
+                     autocomplete="off" aria-label="Monthly take-home pay"></div>
+            <label class="apa" for="s-income">What you take home each month</label>
+          </div>
+          <div class="mula-baris">
+            <div class="wang"><span class="rm">RM</span>
+              <input id="s-saved" type="text" inputmode="decimal" placeholder="0.00"
+                     autocomplete="off" aria-label="Savings you already have"></div>
+            <label class="apa" for="s-saved">Savings you already have</label>
+          </div>
+        </div>
+        <div id="plan"></div>
+      </div>
+
+      <div class="panel" id="hadapan">
+        <span class="label">The months ahead</span>
+        <p class="lede kecil">One row per month from next month on. It answers one question:
+          <b>when does this get easier?</b> Each row shows what goes out, what is left, and
+          what you would have saved by then — and the line under a month names the
+          commitment that ends there.</p>
+        <div class="mula">
+          <div class="mula-baris">
+            <div class="wang"><span class="rm">RM</span>
+              <input id="s-living" type="text" inputmode="decimal" placeholder="0.00"
+                     autocomplete="off" aria-label="Living costs each month"></div>
+            <label class="apa" for="s-living">Living costs each month <i id="s-living-hint"></i></label>
+          </div>
+          <div class="mula-baris">
+            <div class="wang"><span class="rm">RM</span>
+              <input id="s-aside" type="text" inputmode="decimal" placeholder="0.00"
+                     autocomplete="off" aria-label="Put aside each month"></div>
+            <label class="apa" for="s-aside">Put aside each month</label>
+          </div>
+        </div>
+        <div id="hadapan-list"></div>
+      </div>
+
+      <div id="goallist"><div class="kosong"><p class="body">Loading goals&hellip;</p></div></div>
+
+      <details class="kad" id="newgoal">
+        <summary class="tajuk" style="font-size:15px">Add a savings goal</summary>
+        <div style="margin-top:var(--space-4)">
+          <label class="medan"><span>Goal name</span>
+            <input id="g-name" type="text" placeholder="e.g. Emergency buffer, Umrah"></label>
+          <div class="baris-medan">
+            <label class="medan"><span>Target (RM)</span>
+              <input id="g-target" type="text" inputmode="decimal" placeholder="5000"></label>
+            <label class="medan"><span>Already saved (RM)</span>
+              <input id="g-start" type="text" inputmode="decimal" placeholder="0"></label>
+          </div>
+          <label class="medan"><span>Target date</span><input id="g-due" type="date"></label>
+          <button class="btn utama" id="g-add" type="button">Save</button>
+        </div>
+      </details>
+
+      <div class="kad">
+        <span class="label">Net worth</span>
+        <div id="acctlist"></div>
+        <div class="baris-medan" style="margin-top:var(--space-3)">
+          <label class="medan"><span>New account</span>
+            <input id="a-name" type="text" placeholder="e.g. ASB, Maybank"></label>
+          <label class="medan"><span>Type</span>
+            <select id="a-kind"><option value="asset">Asset</option><option value="debt">Debt</option></select></label>
+        </div>
+        <button class="btn kecilbtn" id="a-add" type="button">Add account</button>
+        <div class="petak" style="margin-top:var(--space-4)">
+          <div><span class="label">Assets</span><div class="nilai" id="nw-a">&mdash;</div></div>
+          <div><span class="label">Debts</span><div class="nilai keluar" id="nw-d">&mdash;</div></div>
+          <div><span class="label">Net</span><div class="nilai" id="nw-n">&mdash;</div></div>
+        </div>
+        <div style="margin-top:var(--space-3);display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap">
+          <button class="btn kecilbtn" id="nw-save" type="button">Record month</button>
+          <p class="nota kecil" id="nw-last"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="p-settings" class="pane" hidden>
+      <div class="kad">
+        <span class="label">Backup</span>
+        <p class="lede kecil">Everything is kept in this browser and nowhere else. If you clear
+          your browsing data, or change phone, it is gone. Save a copy now and then.</p>
+        <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
+          <button class="btn kecilbtn" id="backup" type="button">Save a copy</button>
+          <button class="btn kecilbtn" id="restore" type="button">Restore from a file</button>
+        </div>
+        <input type="file" id="restore-file" accept="application/json,.json" hidden>
+      </div>
+
+      <div class="kad" id="exbox" hidden>
+        <span class="label">Examples</span>
+        <p class="lede kecil">There are <b id="excount">0</b> example records showing how this works.
+          Clear them once you are ready to use it for real.</p>
+        <button class="btn bahaya kecilbtn" id="ex-clear" type="button">Clear examples</button>
+      </div>
+
+      <div class="kad">
+        <span class="label">Keywords</span>
+        <p class="lede kecil">When a keyword appears in your note, the app picks that category.
+          The longest keyword wins.</p>
+        <div class="baris-medan">
+          <label class="medan"><span>Keyword</span>
+            <input id="k-word" type="text" placeholder="e.g. grabfood"></label>
+          <label class="medan"><span>Category</span><select id="k-cat"></select></label>
+        </div>
+        <button class="btn kecilbtn" id="k-add" type="button">Add keyword</button>
+        <div class="senarai" id="kwlist" style="margin-top:var(--space-4)"></div>
+      </div>
+
+      <div class="kad">
+        <span class="label">Categories</span>
+        <div class="senarai penuh" id="catlist"></div>
+        <div class="baris-medan" style="margin-top:var(--space-3)">
+          <label class="medan"><span>New category</span>
+            <input id="c-name" type="text" placeholder="e.g. Cat food"></label>
+          <label class="medan"><span>Type</span><select id="c-type">
+            <option value="out">Out</option><option value="in">In</option><option value="save">Savings</option>
+          </select></label>
+        </div>
+        <button class="btn kecilbtn" id="c-add" type="button">Add category</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tab" id="tabs" role="tablist"></nav>
+
+  <!-- calculator -->
+  <button class="apung" id="calcopen" type="button" title="Calculator" aria-label="Calculator"
+          aria-haspopup="dialog" aria-expanded="false"></button>
+
+  <div class="tirai" id="calcveil" hidden></div>
+  <section class="helai" id="calcsheet" role="dialog" aria-modal="true"
+           aria-labelledby="calctitle" hidden>
+    <header class="helai-atas">
+      <h2 class="tajuk" id="calctitle">Calculator</h2>
+      <button class="ikon" id="calcclose" type="button" title="Close" aria-label="Close"></button>
+    </header>
+
+    <div class="papar">
+      <input id="calc-exp" type="text" inputmode="text" autocomplete="off" spellcheck="false"
+             aria-label="Calculation" placeholder="12.50 + 8.90">
+      <output class="hasil" id="calc-out" for="calc-exp" aria-live="polite">0.00</output>
+    </div>
+
+    <div class="pintas" id="calc-quick">
+      <button class="btn kecilbtn" type="button" data-q="/2">Split 2</button>
+      <button class="btn kecilbtn" type="button" data-q="/3">Split 3</button>
+      <button class="btn kecilbtn" type="button" data-q="/4">Split 4</button>
+      <button class="btn kecilbtn" type="button" data-q="+6%">+6% SST</button>
+      <button class="btn kecilbtn" type="button" data-q="+10%">+10% svc</button>
+    </div>
+
+    <div class="kekunci" id="calc-keys"></div>
+
+    <div class="helai-tindakan">
+      <button class="btn utama" id="calc-use" type="button">Use in Log</button>
+      <button class="btn" id="calc-save" type="button">Keep</button>
+    </div>
+
+    <div class="rekod-kira">
+      <div class="rekod-kepala">
+        <span class="label">History</span>
+        <button class="ikon sm bahaya" id="calc-clear" type="button"
+                title="Clear history" aria-label="Clear history"></button>
+      </div>
+      <div id="calc-hist"></div>
+    </div>
+  </section>
+</div>
+
+<script src="icons.js"></script>
+<script src="icons-extra.js"></script>
+<script src="app.js"></script>
+<script src="calc.js"></script>
+</body>
+</html>

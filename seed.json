@@ -1,0 +1,1638 @@
+{
+ "cats": [
+  {
+   "name": "Eating Out",
+   "type": "out"
+  },
+  {
+   "name": "Groceries",
+   "type": "out"
+  },
+  {
+   "name": "Transport",
+   "type": "out"
+  },
+  {
+   "name": "Fuel",
+   "type": "out"
+  },
+  {
+   "name": "Utilities",
+   "type": "out"
+  },
+  {
+   "name": "Phone & Internet",
+   "type": "out"
+  },
+  {
+   "name": "Rent & Home",
+   "type": "out"
+  },
+  {
+   "name": "Health",
+   "type": "out"
+  },
+  {
+   "name": "Clothing",
+   "type": "out"
+  },
+  {
+   "name": "Beauty",
+   "type": "out"
+  },
+  {
+   "name": "Entertainment",
+   "type": "out"
+  },
+  {
+   "name": "Education",
+   "type": "out"
+  },
+  {
+   "name": "Kids & Family",
+   "type": "out"
+  },
+  {
+   "name": "Gifts & Duit Raya",
+   "type": "out"
+  },
+  {
+   "name": "Zakat & Charity",
+   "type": "out"
+  },
+  {
+   "name": "Commitments",
+   "type": "out"
+  },
+  {
+   "name": "Loans",
+   "type": "out"
+  },
+  {
+   "name": "Insurance",
+   "type": "out"
+  },
+  {
+   "name": "Other",
+   "type": "out"
+  },
+  {
+   "name": "Income",
+   "type": "in"
+  },
+  {
+   "name": "Savings",
+   "type": "save"
+  }
+ ],
+ "kws": [
+  {
+   "kw": "makan",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "makan tengahari",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "makan malam",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "sarapan",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "lunch",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "dinner",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "breakfast",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "nasi lemak",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "nasi kandar",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "nasi ayam",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "nasi goreng",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "nasi kukus",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "mee goreng",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "char kuey teow",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "kuey teow",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "roti canai",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "murtabak",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "gulai",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "ikan bakar",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "satay",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "rojak",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "cendol",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "ais kacang",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "teh tarik",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "kopi",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "mamak",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "warung",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "kedai makan",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "restoran",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "restaurant",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "cafe",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "kafe",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "mcd",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "mcdonald",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "kfc",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "pizza",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "dominos",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "burger",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "subway",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "starbucks",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "zus",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "tealive",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "boba",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "bubble tea",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "grabfood",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "foodpanda",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "shopeefood",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "dimsum",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "sushi",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "ramen",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "ayam gepuk",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "apam balik",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "kuih",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "donut",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "aiskrim",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "ice cream",
+   "cat": "Eating Out"
+  },
+  {
+   "kw": "groceries",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "grocer",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "lotus",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "tesco",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "giant",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "mydin",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "aeon",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "econsave",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "speedmart",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "99 speedmart",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "nsk",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "billion",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "jaya grocer",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "village grocer",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "kedai runcit",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "pasar",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "pasar malam",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "pasar tani",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "barang dapur",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "sayur",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "buah",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "telur",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "beras",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "roti",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "gula",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "tepung",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "susu",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "minyak masak",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "daging",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "ikan",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "garam",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "kicap",
+   "cat": "Groceries"
+  },
+  {
+   "kw": "grab",
+   "cat": "Transport"
+  },
+  {
+   "kw": "grabcar",
+   "cat": "Transport"
+  },
+  {
+   "kw": "maxim",
+   "cat": "Transport"
+  },
+  {
+   "kw": "indrive",
+   "cat": "Transport"
+  },
+  {
+   "kw": "teksi",
+   "cat": "Transport"
+  },
+  {
+   "kw": "taxi",
+   "cat": "Transport"
+  },
+  {
+   "kw": "lrt",
+   "cat": "Transport"
+  },
+  {
+   "kw": "mrt",
+   "cat": "Transport"
+  },
+  {
+   "kw": "ktm",
+   "cat": "Transport"
+  },
+  {
+   "kw": "monorail",
+   "cat": "Transport"
+  },
+  {
+   "kw": "rapidkl",
+   "cat": "Transport"
+  },
+  {
+   "kw": "tiket bas",
+   "cat": "Transport"
+  },
+  {
+   "kw": "bas ekspres",
+   "cat": "Transport"
+  },
+  {
+   "kw": "toll",
+   "cat": "Transport"
+  },
+  {
+   "kw": "bayar tol",
+   "cat": "Transport"
+  },
+  {
+   "kw": "smart tag",
+   "cat": "Transport"
+  },
+  {
+   "kw": "parking",
+   "cat": "Transport"
+  },
+  {
+   "kw": "parkir",
+   "cat": "Transport"
+  },
+  {
+   "kw": "tng reload",
+   "cat": "Transport"
+  },
+  {
+   "kw": "touch n go",
+   "cat": "Transport"
+  },
+  {
+   "kw": "e-hailing",
+   "cat": "Transport"
+  },
+  {
+   "kw": "airasia",
+   "cat": "Transport"
+  },
+  {
+   "kw": "tiket flight",
+   "cat": "Transport"
+  },
+  {
+   "kw": "minyak kereta",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "tambah minyak",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "isi minyak",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "petrol",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "petronas",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "shell",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "caltex",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "bhpetrol",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "petron",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "diesel",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "ron95",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "ron97",
+   "cat": "Fuel"
+  },
+  {
+   "kw": "tnb",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "bil tnb",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "bil elektrik",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "elektrik",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "air selangor",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "syabas",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "bil air",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "indah water",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "iwk",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "bil gas",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "gas masak",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "sampah",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "cukai pintu",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "cukai tanah",
+   "cat": "Utilities"
+  },
+  {
+   "kw": "unifi",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "maxis",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "celcom",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "celcomdigi",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "digi",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "umobile",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "u mobile",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "yes 4g",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "time internet",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "prepaid",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "topup",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "top up",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "reload",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "wifi",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "data plan",
+   "cat": "Phone & Internet"
+  },
+  {
+   "kw": "sewa",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "rent",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "rumah",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "loan rumah",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "housing loan",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "mortgage",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "perabot",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "furniture",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "ikea",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "renovation",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "renovate",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "cat rumah",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "plumber",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "servis aircond",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "aircond service",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "maintenance",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "baiki rumah",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "klinik",
+   "cat": "Health"
+  },
+  {
+   "kw": "clinic",
+   "cat": "Health"
+  },
+  {
+   "kw": "hospital",
+   "cat": "Health"
+  },
+  {
+   "kw": "doktor",
+   "cat": "Health"
+  },
+  {
+   "kw": "doctor",
+   "cat": "Health"
+  },
+  {
+   "kw": "ubat",
+   "cat": "Health"
+  },
+  {
+   "kw": "pharmacy",
+   "cat": "Health"
+  },
+  {
+   "kw": "farmasi",
+   "cat": "Health"
+  },
+  {
+   "kw": "guardian",
+   "cat": "Health"
+  },
+  {
+   "kw": "watson",
+   "cat": "Health"
+  },
+  {
+   "kw": "caring",
+   "cat": "Health"
+  },
+  {
+   "kw": "dentist",
+   "cat": "Health"
+  },
+  {
+   "kw": "doktor gigi",
+   "cat": "Health"
+  },
+  {
+   "kw": "cermin mata",
+   "cat": "Health"
+  },
+  {
+   "kw": "optometrist",
+   "cat": "Health"
+  },
+  {
+   "kw": "vitamin",
+   "cat": "Health"
+  },
+  {
+   "kw": "supplement",
+   "cat": "Health"
+  },
+  {
+   "kw": "checkup",
+   "cat": "Health"
+  },
+  {
+   "kw": "panadol",
+   "cat": "Health"
+  },
+  {
+   "kw": "baju",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "baju raya",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "seluar",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "tudung",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "telekung",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "jubah",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "kurung",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "kasut",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "shoes",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "uniqlo",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "padini",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "cotton on",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "brands outlet",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "shein",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "zara",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "kain",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "handbag",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "beg tangan",
+   "cat": "Clothing"
+  },
+  {
+   "kw": "skincare",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "makeup",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "lipstik",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "serum",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "sunscreen",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "facial",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "salon",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "gunting rambut",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "potong rambut",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "spa",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "urut",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "massage",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "manicure",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "pedicure",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "sephora",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "perfume",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "minyak attar",
+   "cat": "Beauty"
+  },
+  {
+   "kw": "netflix",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "spotify",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "youtube premium",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "disney",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "viu",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "astro",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "iflix",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "wayang",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "tiket wayang",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "cinema",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "gsc",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "tgv",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "mbo",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "game",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "steam",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "mobile legend",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "konsert",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "concert",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "karaoke",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "bowling",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "gym",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "futsal",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "badminton",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "swimming",
+   "cat": "Entertainment"
+  },
+  {
+   "kw": "buku",
+   "cat": "Education"
+  },
+  {
+   "kw": "kursus",
+   "cat": "Education"
+  },
+  {
+   "kw": "course",
+   "cat": "Education"
+  },
+  {
+   "kw": "tuition",
+   "cat": "Education"
+  },
+  {
+   "kw": "tuisyen",
+   "cat": "Education"
+  },
+  {
+   "kw": "sekolah",
+   "cat": "Education"
+  },
+  {
+   "kw": "universiti",
+   "cat": "Education"
+  },
+  {
+   "kw": "yuran",
+   "cat": "Education"
+  },
+  {
+   "kw": "fees",
+   "cat": "Education"
+  },
+  {
+   "kw": "udemy",
+   "cat": "Education"
+  },
+  {
+   "kw": "seminar",
+   "cat": "Education"
+  },
+  {
+   "kw": "workshop",
+   "cat": "Education"
+  },
+  {
+   "kw": "peperiksaan",
+   "cat": "Education"
+  },
+  {
+   "kw": "alat tulis",
+   "cat": "Education"
+  },
+  {
+   "kw": "stationery",
+   "cat": "Education"
+  },
+  {
+   "kw": "printing",
+   "cat": "Education"
+  },
+  {
+   "kw": "fotokopi",
+   "cat": "Education"
+  },
+  {
+   "kw": "anak",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "baby",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "diaper",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "pampers",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "susu formula",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "mainan",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "taska",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "nursery",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "babysitter",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "stroller",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "sekolah anak",
+   "cat": "Kids & Family"
+  },
+  {
+   "kw": "duit raya",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "angpow",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "ang pow",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "hadiah",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "gift",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "birthday",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "kahwin",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "wedding",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "kenduri",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "majlis",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "bunga",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "flowers",
+   "cat": "Gifts & Duit Raya"
+  },
+  {
+   "kw": "zakat",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "zakat pendapatan",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "zakat fitrah",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "sedekah",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "derma",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "donate",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "donation",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "infaq",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "waqaf",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "wakaf",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "masjid",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "surau",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "tabung masjid",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "qurban",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "korban",
+   "cat": "Zakat & Charity"
+  },
+  {
+   "kw": "loan",
+   "cat": "Loans"
+  },
+  {
+   "kw": "pinjaman",
+   "cat": "Loans"
+  },
+  {
+   "kw": "ptptn",
+   "cat": "Loans"
+  },
+  {
+   "kw": "loan kereta",
+   "cat": "Loans"
+  },
+  {
+   "kw": "kereta loan",
+   "cat": "Loans"
+  },
+  {
+   "kw": "ansuran",
+   "cat": "Loans"
+  },
+  {
+   "kw": "installment",
+   "cat": "Loans"
+  },
+  {
+   "kw": "instalment",
+   "cat": "Loans"
+  },
+  {
+   "kw": "kad kredit",
+   "cat": "Loans"
+  },
+  {
+   "kw": "credit card",
+   "cat": "Loans"
+  },
+  {
+   "kw": "bayar hutang",
+   "cat": "Loans"
+  },
+  {
+   "kw": "hutang",
+   "cat": "Loans"
+  },
+  {
+   "kw": "bank rakyat",
+   "cat": "Loans"
+  },
+  {
+   "kw": "insurans",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "insurance",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "takaful",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "prudential",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "great eastern",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "allianz",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "etiqa",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "medical card",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "roadtax",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "road tax",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "cukai jalan",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "insurans kereta",
+   "cat": "Insurance"
+  },
+  {
+   "kw": "gaji",
+   "cat": "Income"
+  },
+  {
+   "kw": "salary",
+   "cat": "Income"
+  },
+  {
+   "kw": "bonus",
+   "cat": "Income"
+  },
+  {
+   "kw": "komisen",
+   "cat": "Income"
+  },
+  {
+   "kw": "commission",
+   "cat": "Income"
+  },
+  {
+   "kw": "freelance",
+   "cat": "Income"
+  },
+  {
+   "kw": "side income",
+   "cat": "Income"
+  },
+  {
+   "kw": "elaun",
+   "cat": "Income"
+  },
+  {
+   "kw": "allowance",
+   "cat": "Income"
+  },
+  {
+   "kw": "dividen",
+   "cat": "Income"
+  },
+  {
+   "kw": "dividend",
+   "cat": "Income"
+  },
+  {
+   "kw": "refund",
+   "cat": "Income"
+  },
+  {
+   "kw": "rebate",
+   "cat": "Income"
+  },
+  {
+   "kw": "jualan",
+   "cat": "Income"
+  },
+  {
+   "kw": "overtime",
+   "cat": "Income"
+  },
+  {
+   "kw": "claim",
+   "cat": "Income"
+  },
+  {
+   "kw": "tuntutan",
+   "cat": "Income"
+  },
+  {
+   "kw": "duit masuk",
+   "cat": "Income"
+  },
+  {
+   "kw": "income",
+   "cat": "Income"
+  },
+  {
+   "kw": "simpan",
+   "cat": "Savings"
+  },
+  {
+   "kw": "simpanan",
+   "cat": "Savings"
+  },
+  {
+   "kw": "saving",
+   "cat": "Savings"
+  },
+  {
+   "kw": "savings",
+   "cat": "Savings"
+  },
+  {
+   "kw": "asb",
+   "cat": "Savings"
+  },
+  {
+   "kw": "asnb",
+   "cat": "Savings"
+  },
+  {
+   "kw": "kwsp",
+   "cat": "Savings"
+  },
+  {
+   "kw": "epf",
+   "cat": "Savings"
+  },
+  {
+   "kw": "tabung haji",
+   "cat": "Savings"
+  },
+  {
+   "kw": "fixed deposit",
+   "cat": "Savings"
+  },
+  {
+   "kw": "amanah saham",
+   "cat": "Savings"
+  },
+  {
+   "kw": "unit trust",
+   "cat": "Savings"
+  },
+  {
+   "kw": "emas",
+   "cat": "Savings"
+  },
+  {
+   "kw": "gold",
+   "cat": "Savings"
+  },
+  {
+   "kw": "saham",
+   "cat": "Savings"
+  },
+  {
+   "kw": "crypto",
+   "cat": "Savings"
+  },
+  {
+   "kw": "versa",
+   "cat": "Savings"
+  },
+  {
+   "kw": "stashaway",
+   "cat": "Savings"
+  },
+  {
+   "kw": "raiz",
+   "cat": "Savings"
+  },
+  {
+   "kw": "akaun simpanan",
+   "cat": "Savings"
+  },
+  {
+   "kw": "dana darurat",
+   "cat": "Savings"
+  },
+  {
+   "kw": "emergency fund",
+   "cat": "Savings"
+  },
+  {
+   "kw": "shopee paylater",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "spaylater",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "shopeepay later",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "tiktok paylater",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "tiktok pay later",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "grab paylater",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "grabpay later",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "ifinance",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "i-finance",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "mara",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "paylater",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "pay later",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "bnpl",
+   "cat": "Commitments"
+  },
+  {
+   "kw": "my50",
+   "cat": "Transport"
+  },
+  {
+   "kw": "tng my50",
+   "cat": "Transport"
+  },
+  {
+   "kw": "my 50",
+   "cat": "Transport"
+  },
+  {
+   "kw": "room rental",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "sewa bilik",
+   "cat": "Rent & Home"
+  },
+  {
+   "kw": "bilik",
+   "cat": "Rent & Home"
+  }
+ ]
+}

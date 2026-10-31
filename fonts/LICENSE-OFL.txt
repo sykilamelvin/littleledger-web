@@ -1,0 +1,22 @@
+Fonts in this folder
+====================
+
+Great Vibes Regular  -  GreatVibes-Regular.ttf
+  Version 1.103 (ttfautohint v1.8.4.7-5d5b), 1973 glyphs, weight 400
+  Designer: Robert E. Leuschke
+  SIL Open Font License 1.1  -  https://openfontlicense.org
+
+Jost Regular  -  Jost-Regular.ttf
+  Version 3.710, 535 glyphs, weight 400
+  SIL Open Font License 1.1  -  http://scripts.sil.org/OFL
+
+Both files carry fsType 0 in their OS/2 table: installable embedding, no
+restriction. The OFL permits self-hosting, embedding, bundling and
+redistribution, including in work sold to a customer, provided the licence
+travels with the font files and the fonts are not sold on their own.
+
+Keep this file beside them whenever you copy them into a customer's folder.
+
+Taken from the 2025 invitation sites syadaxhafiz.netlify.app and
+hafizxsyada.netlify.app, where both files were byte-identical. The full OFL
+text is at the URLs above.

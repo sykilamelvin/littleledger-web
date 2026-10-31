@@ -1,0 +1,61 @@
+/* =========================================================================
+   CARD PATTERNS — the looks, not a layout.
+
+   Loaded after tokens.css and before a page's own styles. Every value is a
+   token, so a card template recolours all of it.
+   ========================================================================= */
+
+/* ------------------------------------------------- cards with an icon chip */
+.stat{
+  position:relative;
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  padding:var(--space-6) var(--space-5) var(--space-5);
+  box-shadow:var(--shadow-soft);
+  margin-top:26px;                 /* room for the chip that overhangs the top */
+}
+.stat .chip{
+  position:absolute;top:-26px;left:var(--space-5);
+  width:52px;height:52px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:var(--radius-md);
+  background:var(--berry-600);color:#fff;
+  box-shadow:var(--shadow-lift);
+}
+.stat .chip span{display:flex;width:24px;height:24px}
+.stat.is-coral .chip{background:var(--watermelon-600)}
+.stat.is-sun   .chip{background:var(--sunrise-400);color:var(--ink)}
+.stat h3{font-family:var(--font-display);font-size:18px;font-weight:600;margin:0}
+.stat .kecil{font-size:12.5px;color:var(--ink-muted);margin:var(--space-1) 0 0}
+
+/* ------------------------------------------------------------- progress */
+.progress{margin-top:var(--space-4)}
+.progress .atas{
+  display:flex;align-items:baseline;justify-content:space-between;
+  font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-muted);margin-bottom:var(--space-2);
+}
+.progress .atas b{color:var(--berry-600);font-variant-numeric:tabular-nums}
+.progress .track{
+  height:6px;border-radius:var(--radius-pill);
+  background:var(--surface-200);overflow:hidden;
+}
+.progress .fill{
+  height:100%;border-radius:var(--radius-pill);
+  background:var(--berry-600);
+}
+.progress .bawah{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:var(--space-3);font-size:12px;color:var(--ink-muted);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------------------------------------------------------------- badge */
+.badge{
+  display:inline-flex;align-items:center;
+  font-size:11px;font-weight:600;
+  padding:5px var(--space-3);border-radius:var(--radius-pill);
+  background:var(--watermelon-100);color:var(--watermelon-600);
+}
+.badge.is-mint{background:var(--berry-100);color:var(--berry-600)}
+.badge.is-sun{background:var(--sunrise-100);color:var(--ink)}
