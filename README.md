@@ -11,10 +11,16 @@ instead your records are **encrypted with a key derived from it** — what sits
 in the browser's storage is unreadable without the PIN. Someone picking up
 your phone cannot read your ledger.
 
-Be clear about the limit: six digits is a million guesses, so against someone
-who copies the stored data onto a fast machine this is a lock on a drawer,
-not a safe. And there is no reset. Forget the PIN and the records cannot be
-opened, which is the other reason to keep a backup.
+**Forgot the PIN?** At setup you are given a recovery code. The ledger is
+encrypted with a random key, and two locked copies of that key are kept — one
+opened by your PIN, one by the code. So the code opens your *current*
+records, not an old backup, and you then set a new PIN. The old PIN stops
+working at that point.
+
+Be clear about the limits: six digits is a million guesses, so against someone
+who copies the stored data onto a fast machine this is a lock on a drawer, not
+a safe. And if you lose both the PIN and the recovery code, nothing can open
+the records — there is no server to ask. Keep a backup as well.
 
 ## Where your records live
 

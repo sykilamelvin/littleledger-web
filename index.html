@@ -24,7 +24,7 @@
     <label class="medan" id="g-name-row" hidden><span>Your name</span>
       <input id="g-name" type="text" autocomplete="name" placeholder="Eve"></label>
 
-    <div class="medan"><span>6-digit PIN</span>
+    <div class="medan" id="pin-row"><span>6-digit PIN</span>
       <div class="pin-kotak">
         <input type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 1" autocomplete="off">
         <input type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 2" autocomplete="off">
@@ -35,9 +35,23 @@
       </div>
     </div>
 
+    <label class="medan" id="code-row" hidden><span>Recovery code</span>
+      <input id="g-code" type="text" autocomplete="off" spellcheck="false"
+             placeholder="ABCDE-FGHJK-MNPQR-STUVW"></label>
+
+    <div id="code-show" hidden>
+      <div class="kod" id="gate-code"></div>
+      <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;margin-top:var(--space-3)">
+        <button class="btn kecilbtn" id="gate-copy" type="button">Copy</button>
+        <button class="btn utama kecilbtn" id="gate-done" type="button">I have saved it</button>
+      </div>
+    </div>
+
     <button class="btn utama" id="gate-go" type="button">Unlock</button>
-    <p class="nota kecil" id="gate-warn" hidden>There is no way to reset this. Forget the PIN
-      and the records cannot be opened, so save a backup once you are set up.</p>
+    <button class="btn kecilbtn" id="gate-forgot" type="button" hidden>I forgot my PIN</button>
+    <button class="btn kecilbtn" id="gate-back" type="button" hidden>Back</button>
+    <p class="nota kecil" id="gate-warn" hidden>You will get a recovery code next. It is the only
+      way back in if you forget the PIN, so keep it somewhere safe.</p>
   </div>
 </section>
 
