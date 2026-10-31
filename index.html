@@ -13,6 +13,34 @@
 </head>
 <body>
 
+<section class="gerbang" id="gate" hidden>
+  <div class="gerbang-kad">
+    <div class="gerbang-tanda">Little Ledger</div>
+    <h1 class="tajuk" id="gate-title">Welcome back</h1>
+    <p class="lede kecil" id="gate-lede">Your 6-digit PIN.</p>
+
+    <div id="gate-msg" class="amaran" hidden></div>
+
+    <label class="medan" id="g-name-row" hidden><span>Your name</span>
+      <input id="g-name" type="text" autocomplete="name" placeholder="Eve"></label>
+
+    <div class="medan"><span>6-digit PIN</span>
+      <div class="pin-kotak">
+        <input type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 1" autocomplete="off">
+        <input type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 2" autocomplete="off">
+        <input type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 3" autocomplete="off">
+        <input type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 4" autocomplete="off">
+        <input type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 5" autocomplete="off">
+        <input type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 6" autocomplete="off">
+      </div>
+    </div>
+
+    <button class="btn utama" id="gate-go" type="button">Unlock</button>
+    <p class="nota kecil" id="gate-warn" hidden>There is no way to reset this. Forget the PIN
+      and the records cannot be opened, so save a backup once you are set up.</p>
+  </div>
+</section>
+
 <div class="app">
   <header class="atas">
     <h1 class="nama" id="appname">Little Ledger</h1>
@@ -198,6 +226,7 @@
         <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
           <button class="btn kecilbtn" id="backup" type="button">Save a copy</button>
           <button class="btn kecilbtn" id="restore" type="button">Restore from a file</button>
+          <button class="btn kecilbtn" id="lock" type="button">Lock now</button>
         </div>
         <input type="file" id="restore-file" accept="application/json,.json" hidden>
       </div>
@@ -285,6 +314,7 @@
 
 <script src="icons.js"></script>
 <script src="icons-extra.js"></script>
+<script src="lock.js"></script>
 <script src="app.js"></script>
 <script src="calc.js"></script>
 </body>

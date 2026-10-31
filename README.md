@@ -4,7 +4,17 @@ A planner ledger that runs entirely in your browser. Plan the month first —
 salary in, every bill listed — and what is left is what there is to spend.
 Day to day spending counts that down.
 
-No server, no sign in, no account. Nothing you type leaves your device.
+No server and no account. Nothing you type leaves your device.
+
+It opens on a 6-digit PIN. There is nobody to check that PIN against, so
+instead your records are **encrypted with a key derived from it** — what sits
+in the browser's storage is unreadable without the PIN. Someone picking up
+your phone cannot read your ledger.
+
+Be clear about the limit: six digits is a million guesses, so against someone
+who copies the stored data onto a fast machine this is a lock on a drawer,
+not a safe. And there is no reset. Forget the PIN and the records cannot be
+opened, which is the other reason to keep a backup.
 
 ## Where your records live
 

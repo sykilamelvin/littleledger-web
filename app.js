@@ -64,20 +64,17 @@ function save() {
 /* Everything is kept in this browser. There is no server to lose, but
    there is also nothing to fall back on if the browser's data is cleared,
    so Settings offers a backup file. */
-var STORE = "ll.data";
 function flush() {
-  if (!dirty) return;
+  if (!dirty || !window.LL || !window.LL.isUnlocked()) return;
   dirty = false;
-  try {
-    localStorage.setItem(STORE, JSON.stringify(S));
+  window.LL.save(S).then(function () {
     setSaved("Saved at " + new Date().toLocaleTimeString("en-MY"));
     note("");
-  } catch (e) {
+  }).catch(function () {
     dirty = true;
     setSaved("Could not save.");
-    note("This browser would not save. If you are in a private window, your " +
-         "records cannot be kept.");
-  }
+    note("This browser would not save. In a private window, records cannot be kept.");
+  });
 }
 window.addEventListener("beforeunload", function () { flush(); });
 
@@ -1361,18 +1358,19 @@ function boot(d) {
   render();
 }
 
-var saved = null;
-try { saved = localStorage.getItem(STORE); } catch (e) { }
-if (saved) {
-  try { boot(JSON.parse(saved)); }
-  catch (e) { note("The saved records could not be read. Starting fresh."); boot({}); }
-} else {
-  /* nothing here yet — take the starting categories and keywords only */
-  fetch("seed.json")
-    .then(function (r) { return r.json(); })
-    .then(function (d) { boot({ cats: d.cats, kws: d.kws }); })
-    .catch(function () { boot({}); });
-}
+window.addEventListener("ll:unlocked", function () {
+  window.LL.load()
+    .then(function (d) {
+      if (d && (d.cats || []).length) { boot(d); return; }
+      /* unlocked but nothing saved yet: take the starting categories only */
+      return fetch("seed.json").then(function (r) { return r.json(); })
+        .then(function (x) { boot({ cats: x.cats, kws: x.kws }); dirty = true; flush(); });
+    })
+    .catch(function () {
+      note("The saved records could not be opened.");
+      boot({});
+    });
+});
 
 /* ---- backup, since this browser is the only copy ---- */
 function download(name, text) {
@@ -1389,6 +1387,9 @@ if (el("backup")) {
     var d = new Date();
     download("little-ledger-" + ymd(d) + ".json", JSON.stringify(S, null, 1));
   };
+}
+if (el("lock")) {
+  el("lock").onclick = function () { flush(); setTimeout(function () { window.LL.lock(); }, 200); };
 }
 if (el("restore")) {
   el("restore").onclick = function () { el("restore-file").click(); };
