@@ -13,13 +13,13 @@ echo.
 git status --short 2>nul
 echo.
 
-REM Any line at all from status means something changed.
+REM Any line at all from status means there are edits to save.
+REM If there are none, there may STILL be saved work that never reached
+REM GitHub, so we always go on and try to send.
 for /f "delims=" %%i in ('git status --porcelain 2^>nul') do goto haschanges
-echo   Nothing has changed since the last publish.
-echo   Your phone already has the newest version.
-echo.
-pause
-exit /b 0
+echo   No new edits to save.
+echo   Checking whether GitHub already has everything...
+goto sendit
 
 :haschanges
 set "MSG="
@@ -40,8 +40,12 @@ if errorlevel 1 goto failed
 git commit -m "%MSG%" -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 if errorlevel 1 goto failed
 
+:sendit
 echo.
 echo   Sending to GitHub...
+echo   If it asks you to sign in, choose  sykilamelvin
+echo   -  NOT syakila-png, that is your work account.
+echo.
 git push
 if errorlevel 1 goto pushfailed
 
