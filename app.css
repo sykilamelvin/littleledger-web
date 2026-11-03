@@ -318,7 +318,10 @@ main{
 }
 /* Edit fields on a card, not figures read at a glance, so a little under the
    15px body size. The 140px basis holds "dd/mm/yyyy" and its picker on one line. */
-.perkara .ubah input{font-size:14px}
+/* A phone gives a date field a wide intrinsic size of its own and will not
+   shrink it to the column, so it pushes out past the card edge. min-width
+   lets it shrink; max-width stops it ever growing past its label again. */
+.perkara .ubah input{font-size:14px;min-width:0;max-width:100%}
 /* "Pay once" is a choice, not a field, so it reads across rather than down
    and keeps the native box instead of the bordered input shell. */
 .perkara .ubah label.sekali{
@@ -654,6 +657,9 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{
 @media (max-width:420px){
   .bulan-baris{grid-template-columns:minmax(0,1.2fr) repeat(4, minmax(0,1fr));gap:2px 4px}
   .bulan-baris .kol{font-size:11px}
+  /* Side by side, "dd/mm/yyyy" and its picker have nowhere near enough room
+     on a phone, so each field takes the whole width instead. */
+  .perkara .ubah label{flex:1 1 100%}
 }
 
 /* =========================================================================

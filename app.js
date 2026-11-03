@@ -1231,20 +1231,21 @@ window.addEventListener("ll:signedin", function (e) {
 });
 
 /* ---------- appearance ----------
-   "auto" follows the phone; the other two override it. The choice is a
-   per-device preference, so it lives in this browser rather than the
-   ledger — the same account on a laptop can be light and dark on a phone. */
+   Light or dark, chosen here and nowhere else. The choice is a per-device
+   preference, so it lives in this browser rather than in the ledger — the
+   same account can be light on a laptop and dark on a phone. */
 function applyTema(choice) {
-  var root = document.documentElement;
-  if (choice === "dark") root.setAttribute("data-theme", "dark");
-  else if (choice === "light") root.setAttribute("data-theme", "light");
-  else root.removeAttribute("data-theme");
+  /* Light or dark, nothing else. A choice saved before the third option
+     was taken out lands on light, which is what it showed anyway. */
+  var pick = choice === "dark" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", pick);
   Array.prototype.forEach.call(el("tema").children, function (b) {
-    b.classList.toggle("on", b.dataset.tema === choice);
+    b.classList.toggle("on", b.dataset.tema === pick);
   });
 }
 function temaNow() {
-  try { return localStorage.getItem("ll.tema") || "auto"; } catch (e) { return "auto"; }
+  try { return localStorage.getItem("ll.tema") === "dark" ? "dark" : "light"; }
+  catch (e) { return "light"; }
 }
 el("tema").addEventListener("click", function (ev) {
   var b = ev.target.closest("button[data-tema]");
