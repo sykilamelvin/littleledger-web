@@ -9,6 +9,35 @@ var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","De
 var DAY = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 var I = window.ICONS || {};
 
+/* ---------- keeping the plain address up to date ----------
+   GitHub Pages tells a phone it may keep this page for ten minutes, so for
+   ten minutes after a publish the plain link can still show the old one.
+   The files it loads carry a version on the end and are never stale, so the
+   page is the only thing that can lag. This asks for the page again without
+   touching the cache, and if the version it finds is not the version that
+   loaded this file, it reloads once. Once per version per visit, recorded
+   before reloading, so a reload that somehow comes back stale cannot turn
+   into a loop. */
+(function () {
+  var tag = document.querySelector('script[src*="app.js"]');
+  var mine = tag && (tag.getAttribute("src") || "").match(/\?v=(\d+)/);
+  if (!mine) return;              /* no version to compare against */
+  if (!window.fetch) return;
+  fetch(location.pathname + "?t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { return r.ok ? r.text() : null; })
+    .then(function (html) {
+      if (!html) return;
+      var live = html.match(/app\.js\?v=(\d+)/);
+      if (!live || live[1] === mine[1]) return;
+      try {
+        if (sessionStorage.getItem("ll.gotv") === live[1]) return;
+        sessionStorage.setItem("ll.gotv", live[1]);
+      } catch (e) { return; }     /* cannot remember, so do not risk looping */
+      location.reload();
+    })
+    .catch(function () { });      /* offline is not an error worth showing */
+}());
+
 function el(id) { return document.getElementById(id); }
 function money(n) {
   return (n < 0 ? "-RM " : "RM ") +
