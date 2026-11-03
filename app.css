@@ -762,6 +762,28 @@ body.terkunci{overflow:hidden}
 }
 .gerbang-kad .btn.kecilbtn:hover{background:transparent;color:var(--berry-700)}
 
+/* The recovery code offers two choices of equal weight, so they sit side by
+   side instead of stacked, and they keep the ordinary button treatment that
+   the rules above strip off the gate's quieter second button. */
+.gerbang-kad .kod-butang{display:flex;gap:var(--space-2);margin-top:var(--space-3)}
+.gerbang-kad .kod-butang .btn{
+  flex:1 1 0;width:auto;margin-top:0;min-height:44px;
+  padding:0 var(--space-2);letter-spacing:.04em;line-height:1.25;
+  background:var(--card);border-color:var(--berry-600);color:var(--berry-600);
+}
+.gerbang-kad .kod-butang .btn.utama{
+  background:var(--berry-600);color:#fff;border-color:var(--berry-600);
+}
+/* berry-600 is far too dark to read against the dark ground, so there the
+   dark theme's own accent takes over: measured 6.17:1 for the outlined
+   button and 6.85:1 for the filled one. */
+:root[data-theme="dark"] .gerbang-kad .kod-butang .btn{
+  border-color:var(--accent);color:var(--accent);
+}
+:root[data-theme="dark"] .gerbang-kad .kod-butang .btn.utama{
+  background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
+}
+
 /* six boxes that behave like one field */
 .pin-kotak{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--space-2)}
 .pin-kotak input{
