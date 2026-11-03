@@ -36,11 +36,12 @@ function dateLabel(iso) {
 }
 
 /* ---------- state ---------- */
-var S = { cats: [], kws: [], tx: [], goals: [], accts: [], commits: [], networth: {}, plan: { income: 0, setAside: 0, living: 0 } };
+var S = { cats: [], kws: [], tx: [], goals: [], accts: [], commits: [], networth: {}, plan: { income: 0, setAside: 0, living: 0 }, notes: [], logNotes: [] };
 var loaded = false, dirty = false, saving = false, saveTimer = null;
 var view = new Date(); view.setDate(1);
 var tab = "log";
 var override = null;   /* category picked by hand for the entry being typed */
+var whoName = "";      /* first name of whoever is signed in, for the greeting */
 
 function catOf(n) { for (var i = 0; i < S.cats.length; i++) { if (S.cats[i].name === n) return S.cats[i]; } return null; }
 function typeOf(n) { var c = catOf(n); return c ? c.type : "out"; }
@@ -118,14 +119,48 @@ function timeLeft(due) {
   var days = Math.round((d - now) / 86400000);
   return { days: days, months: days <= 0 ? 0 : Math.max(1, Math.round(days / 30.44)) };
 }
-function paidThisMonth(id) {
-  var mk = monthKey(view);
+/* The monthly set-aside, as a record rather than a plan. It is a savings
+   transaction for that month that is not tied to any goal. */
+function setAsideThisMonth(mk) {
+  for (var i = 0; i < S.tx.length; i++) {
+    if (S.tx[i].type === "save" && !S.tx[i].goal && S.tx[i].month === mk) return S.tx[i];
+  }
+  return null;
+}
+function savedSoFar() {
+  var n = 0;
+  S.tx.forEach(function (t) { if (t.type === "save") n += t.amount; });
+  return Math.round(n * 100) / 100;
+}
+
+function paidInMonth(id, mk) {
   for (var i = 0; i < S.tx.length; i++) {
     if (S.tx[i].commit === id && S.tx[i].month === mk) return S.tx[i];
   }
   return null;
 }
+function paidThisMonth(id) { return paidInMonth(id, monthKey(view)); }
+/* "Nov 2026" from "2026-11", for a bill paid in one month and never again. */
+function monthLabel(mk) {
+  var p = String(mk || "").split("-");
+  if (p.length !== 2) return mk || "";
+  return (MON[+p[1] - 1] || "") + " " + p[0];
+}
+/* Whether a bill belongs to a month. A one-off sits in its own month alone;
+   everything else runs from now until its last payment. One place decides
+   this, so the planner list and the planner maths can never disagree. */
+function dueInMonth(c, mk) {
+  /* A month she actually paid in always shows the bill, even if the plan
+     says otherwise. Otherwise a tick could end up in a month with no row
+     to untick it from, and the money would vanish from the planner. */
+  if (paidInMonth(c.id, mk)) return true;
+  if (c.once) return c.once === mk;
+  var endKey = c.end ? c.end.slice(0, 7) : null;
+  return endKey === null || mk <= endKey;
+}
 function paymentsLeft(c) {
+  /* A one-off is owed or done with. It never has a run of payments ahead. */
+  if (c.once) return paidInMonth(c.id, c.once) ? 0 : 1;
   var tl = timeLeft(c.end);
   if (!tl) return null;
   if (tl.days <= 0) return 0;
@@ -136,12 +171,24 @@ function paymentsLeft(c) {
      - fixed costs like rent and a travel pass, which have no end because they
        are not borrowing; they simply recur
    Only the first kind ever "frees up" money, so they are counted apart. */
+/* How long until the last debt is paid off. The header pill and the Debts
+   card both read this, so they always say the same number. */
+function monthsRemaining() {
+  var T = commitTotals();
+  if (!T.lastEnd) return null;
+  var tl = timeLeft(T.lastEnd);
+  return tl ? tl.months : null;
+}
+
 function commitTotals() {
   var perMonth = 0, left = 0, active = 0, lastEnd = "";
   var ending = 0, ongoing = 0, endingIds = [];
   S.commits.forEach(function (c) {
     var n = paymentsLeft(c);
     var live = (n === null || n > 0);
+    /* A one-off is money still owed, so it counts in the total left, but it
+       is not a monthly cost and it cannot push back the debt-free date. */
+    if (c.once) { if (live) { active++; left += c.monthly; } return; }
     if (live) {
       perMonth += c.monthly; active++;
       if (c.end) {
@@ -181,6 +228,12 @@ function totalPaidToCommitments() {
 /* ---------- render ---------- */
 function render() {
   el("mlbl").textContent = MONTH[view.getMonth()] + " " + view.getFullYear();
+  var salam = el("kal-salam");
+  if (salam) {
+    salam.textContent = whoName
+      ? ("Welcome back, " + whoName + " ♡")
+      : "Welcome back ♡";
+  }
   var mk = monthKey(view);
   if (tab === "log") renderLog(mk);
   else if (tab === "history") renderHistory(mk);
@@ -201,8 +254,7 @@ function monthPlan(mk) {
   var committed = 0;
   S.commits.forEach(function (c) {
     if (!c.monthly) return;
-    var endKey = c.end ? c.end.slice(0, 7) : null;
-    if (endKey === null || mk <= endKey) committed += c.monthly;
+    if (dueInMonth(c, mk)) committed += c.monthly;
   });
   var saving = S.plan.setAside || 0;
   var toSpend = income - committed - saving;
@@ -254,10 +306,7 @@ function renderPlanner(mk) {
 
   /* Every line she pays that month, by name, each one editable — not a
      single lumped figure. This is the list she actually thinks in. */
-  var due = S.commits.filter(function (c) {
-    var endKey = c.end ? c.end.slice(0, 7) : null;
-    return endKey === null || mk <= endKey;
-  });
+  var due = S.commits.filter(function (c) { return dueInMonth(c, mk); });
   /* A tick means "this month's amount is paid" — not that the whole debt is
      cleared. Ticking records the payment; unticking takes it back. */
   var paidCount = 0;
@@ -270,11 +319,22 @@ function renderPlanner(mk) {
       (done ? "Paid — tap to undo" : "Tick when you have paid this month") +
       '" aria-label="' + esc(c.name) + (done ? ", paid" : ", not paid yet") + '">' +
       (done ? (I.check || "✓") : "") + "</button>" +
-      '<span class="bil-nama">' + esc(c.name) + "</span>" +
+      '<input class="bil-nama" type="text" data-bnm="' + esc(c.id) + '" value="' +
+      esc(c.name) + '" aria-label="Name of this bill" spellcheck="false">' +
       '<span class="tolak pl-medan"><span class="rm">RM</span>' +
       '<input type="text" inputmode="decimal" data-bil="' + esc(c.id) + '" value="' +
       (c.monthly ? c.monthly.toFixed(2) : "") + '" placeholder="0.00" aria-label="' +
-      esc(c.name) + ' amount"></span></div>';
+      esc(c.name) + ' amount"></span>' +
+      '<button class="bil-buang" type="button" data-bdel="' + esc(c.id) +
+      '" title="Remove this bill" aria-label="Remove ' + esc(c.name) + '">' +
+      (I.close || "×") + "</button>" +
+      notesForBill(c.id).map(function (n) {
+        /* The row is a list of figures, so a note is reduced to a tag here.
+           The whole thing stays in the Notes card, and on the tooltip. */
+        var short = n.text.length > 34 ? n.text.slice(0, 33).trim() + "…" : n.text;
+        return '<span class="bil-nota" title="' + esc(n.text) + '">(' +
+               esc(short) + ")</span>";
+      }).join("") + "</div>";
   }).join("");
 
   rows.innerHTML =
@@ -285,7 +345,7 @@ function renderPlanner(mk) {
     '<div class="pl-b jumlah-bil"><span>Total to pay' +
       (due.length ? ' <i>' + paidCount + " of " + due.length + " ticked</i>" : "") +
       '</span><span class="tolak">− ' + money0(p.committed) + "</span></div>" +
-    planField("Into savings", "pf-aside", p.saving, "tolak") +
+    savingsRow(mk, p.saving) +
     '<div class="pl-b garis"><span>Left to spend</span><span class="kuat">' +
       (p.income ? money0(p.toSpend) : "—") + "</span></div>" +
     (p.spent > 0 ? planRow("Spent so far", "− " + money0(p.spent), "tolak") : "") +
@@ -297,6 +357,23 @@ function planRow(label, value, cls) {
   return '<div class="pl-b"><span>' + esc(label) + '</span><span class="' + cls + '">' +
     value + "</span></div>";
 }
+/* Same shape as a bill row, so ticking it means the same thing: this month's
+   amount has actually been moved, not merely planned. */
+function savingsRow(mk, amount) {
+  var done = !!setAsideThisMonth(mk);
+  return '<div class="pl-b bil simpan-baris' + (done ? " dibayar" : "") + '">' +
+    '<button class="tik' + (done ? " on" : "") + '" type="button" data-tiksimpan="1" ' +
+    'role="checkbox" aria-checked="' + done + '" title="' +
+    (done ? "Moved — tap to undo" : "Tick when you have moved it across") +
+    '" aria-label="Into savings' + (done ? ", moved" : ", not moved yet") + '">' +
+    (done ? (I.check || "✓") : "") + "</button>" +
+    '<span class="bil-nama tetap-nama">Into savings</span>' +
+    '<span class="tolak pl-medan"><span class="rm">RM</span>' +
+    '<input type="text" inputmode="decimal" id="pf-aside" value="' +
+    (amount ? amount.toFixed(2) : "") + '" placeholder="0.00" aria-label="Into savings"></span>' +
+    "<span></span></div>";
+}
+
 function planField(label, id, value, cls) {
   return '<div class="pl-b"><span>' + esc(label) + '</span>' +
     '<span class="' + cls + ' pl-medan"><span class="rm">RM</span>' +
@@ -305,170 +382,9 @@ function planField(label, id, value, cls) {
     '"></span></div>';
 }
 
-/* ---------- ideas ----------
-   Every suggestion has to point at a number that is actually in her ledger.
-   Nothing generic: if there is no figure behind it, it is not shown. */
-function ideas(mk) {
-  var p = monthPlan(mk);
-  if (!p.income) return [];
-  var out = [];
-  var parts = mk.split("-"), y = +parts[0], m = +parts[1];
-  var daysInMonth = new Date(y, m, 0).getDate();
-  var now = new Date();
-  var isNow = (now.getFullYear() === y && now.getMonth() + 1 === m);
-  var elapsed = isNow ? now.getDate() : (new Date(y, m - 1, 1) > now ? 0 : daysInMonth);
-  var daysLeft = daysLeftIn(mk);
-
-  /* --- over the plan: say what to do, not just that it happened --- */
-  if (p.left < 0) {
-    var over = -p.left;
-    if (p.saving > 0 && p.saving >= over) {
-      out.push({ t: "You are " + money0(over) + " over",
-        b: "Hold back this month's " + money0(p.saving) + " savings rather than miss a commitment. " +
-           "A missed PayLater costs a late fee; a paused month of saving costs nothing but time." });
-    } else {
-      out.push({ t: "You are " + money0(over) + " over",
-        b: "Commitments have to be paid, so this has to come out of spending for the rest of the month. " +
-           "Look at the biggest category below first." });
-    }
-  }
-
-  /* --- a month not started yet: this is a plan, so say what it allows --- */
-  var started = new Date(y, m - 1, 1) <= new Date(now.getFullYear(), now.getMonth(), 1);
-  if (!started) {
-    if (p.toSpend > 0) {
-      out.push({ t: "Planning " + MONTH[m - 1] + " " + y,
-        b: "After " + money0(p.committed) + " of commitments and " + money0(p.saving) +
-           " to savings, you have " + money0(p.toSpend) + " to spend — about " +
-           money0(p.toSpend / daysInMonth) + " a day across " + daysInMonth + " days. " +
-           "Log as you go and the number at the top counts down." });
-    } else {
-      out.push({ t: "This plan does not balance",
-        b: "Commitments and savings come to " + money0(p.committed + p.saving) +
-           ", which is more than " + money0(p.income) + " coming in. Lower what you " +
-           "put aside, or the plan cannot hold." });
-    }
-  }
-
-  /* --- pace: the single most useful number mid-month --- */
-  if (isNow && elapsed >= 3 && p.toSpend > 0) {
-    var perDay = p.spent / elapsed;
-    var projected = perDay * daysInMonth;
-    if (projected > p.toSpend) {
-      var short = projected - p.toSpend;
-      out.push({ t: "At this pace you run out early",
-        b: "You are spending " + money0(perDay) + " a day. Carry on and you finish " +
-           money0(short) + " short. Staying under " +
-           money0(Math.max(0, p.left) / Math.max(1, daysLeft)) + " a day for the last " +
-           daysLeft + " days keeps you inside the plan." });
-    } else if (p.left > 0) {
-      out.push({ t: "You are ahead of pace",
-        b: "At " + money0(perDay) + " a day you will end the month with about " +
-           money0(p.toSpend - projected) + " spare. Move it into savings on the last day " +
-           "rather than letting it drift into next month." });
-    }
-  }
-
-  /* --- where the money actually goes --- */
-  var byCat = {}, byNote = {}, cnt = {};
-  monthTx(mk).forEach(function (t) {
-    if (t.type !== "out" || t.commit) return;
-    byCat[t.cat] = (byCat[t.cat] || 0) + t.amount;
-    cnt[t.cat] = (cnt[t.cat] || 0) + 1;
-    var label = (t.note || "").trim();
-    if (label) {
-      byNote[label] = byNote[label] || { sum: 0, n: 0 };
-      byNote[label].sum += t.amount;
-      byNote[label].n += 1;
-    }
-  });
-  var cats = Object.keys(byCat).sort(function (a, b) { return byCat[b] - byCat[a]; });
-  if (cats.length && p.spent > 0) {
-    var top = cats[0], share = Math.round(byCat[top] / p.spent * 100);
-    if (share >= 30) {
-      var n = cnt[top], each = byCat[top] / n;
-      var where = (n === 1)
-        ? money0(byCat[top]) + " in a single entry. "
-        : money0(byCat[top]) + " across " + n + " entries, about " + money0(each) + " each. ";
-      out.push({ t: top + " is " + share + "% of your spending", b: where + catIdea(top, each, n) });
-    }
-  }
-
-  /* --- the same small thing, over and over --- */
-  var rep = Object.keys(byNote).filter(function (k) { return byNote[k].n >= 3; })
-    .sort(function (a, b) { return byNote[b].sum - byNote[a].sum; })[0];
-  if (rep) {
-    out.push({ t: rep + " came up " + byNote[rep].n + " times",
-      b: money0(byNote[rep].sum) + " this month. If that is a normal month it is about " +
-         money0(byNote[rep].sum * 12) + " a year — worth deciding on deliberately " +
-         "rather than by habit." });
-  }
-
-  /* --- nothing being saved --- */
-  if (p.saving <= 0 && p.left > 0) {
-    var suggest = Math.max(20, Math.floor(p.left * 0.3 / 10) * 10);
-    out.push({ t: "Nothing is going to savings yet",
-      b: "You have " + money0(p.left) + " spare. Putting " + money0(suggest) +
-         " aside each month is " + money0(suggest * 12) + " in a year, and it is far easier " +
-         "to start while the amount is small." });
-  }
-
-  /* --- the one lever that beats all the others --- */
-  var T = commitTotals();
-  if (T.ending > 0 && T.lastEnd) {
-    var d = new Date(T.lastEnd + "T00:00:00");
-    var after = new Date(d.getFullYear(), d.getMonth() + 1, 1);
-    out.push({ t: "The big one is " + MONTH[after.getMonth()] + " " + after.getFullYear(),
-      b: money0(T.ending) + " a month of debt stops then" +
-         (T.ongoing > 0 ? " (rent and passes carry on, so " + money0(T.ongoing) +
-          " a month stays)" : "") +
-         ". No amount of cutting back matches that — the thing to protect is not " +
-         "adding anything new before it." });
-  }
-
-  return out.slice(0, 4);
-}
-/* Ideas tied to the category, to what she actually has, and to how many
-   entries there are — advice about "several trips" is wrong for one. */
-function catIdea(cat, each, n) {
-  var hasMy50 = false;
-  S.commits.forEach(function (c) { if (/my ?50/i.test(c.name)) hasMy50 = true; });
-  var map = {
-    "Eating Out": n > 1
-      ? "Two fewer bought meals a week is roughly " + money0(each * 8) +
-        " a month. Keeping one of them is usually easier to stick to than cutting them all."
-      : "One meal out is not the problem — it is worth watching whether it becomes a habit.",
-    "Groceries": n > 1
-      ? "One planned shop beats several top-up trips — the extra trips are where the " +
-        "unplanned items get in."
-      : "A single planned shop is the cheap way to do this. Keep it to one a week if you can.",
-    "Transport": hasMy50
-      ? "You already pay RM50 for the My50 pass. Every trip it covers that you take by Grab " +
-        "instead is money spent twice."
-      : "If most of these are the same trip, a monthly pass may cost less than the fares.",
-    "Fuel": "Worth checking against Transport — if both are high, some trips may be " +
-      "cheaper by rail.",
-    "Entertainment": "Subscriptions renew quietly. Check what is still charging you.",
-    "Phone & Internet": "This is usually a fixed plan, so the only real saving is a cheaper " +
-      "one — worth one call a year.",
-    "Commitments": "These are fixed until they end, so the room has to come from somewhere else."
-  };
-  return map[cat] || "Worth a look, since it is where most of the money went.";
-}
-
-function renderIdeas(mk) {
-  var box = el("idea-list"), list = ideas(mk);
-  el("ideas").hidden = !list.length;
-  if (!list.length) return;
-  box.innerHTML = list.map(function (o) {
-    return '<div class="idea"><div class="idea-t">' + esc(o.t) + '</div>' +
-      '<p class="idea-b">' + esc(o.b) + "</p></div>";
-  }).join("");
-}
-
 function renderLog(mk) {
   renderPlanner(mk);
-  renderIdeas(mk);
+  renderLogNotes();
   var out = 0, inc = 0, sav = 0, byCat = {};
   monthTx(mk).forEach(function (t) {
     if (t.type === "in") { inc += t.amount; }
@@ -538,11 +454,10 @@ function renderLog(mk) {
 
 function renderHistory(mk) {
   var box = el("historylist");
-  if (!loaded) { box.innerHTML = '<div class="kosong"><p class="body">Loading records&hellip;</p></div>'; return; }
+  if (!loaded) { box.innerHTML = ""; return; }
   var rows = monthTx(mk);
   if (!rows.length) {
-    box.innerHTML = '<div class="kosong"><div class="tajuk">Nothing here</div><p class="body">No records for ' +
-      esc(MONTH[view.getMonth()] + " " + view.getFullYear()) + '. Go to Log to add one.</p></div>';
+    box.innerHTML = "";
     return;
   }
   var days = {};
@@ -601,7 +516,8 @@ function renderDebts() {
     el("debtpct").textContent = pct + "%";
     el("debtfill").style.width = pct + "%";
     el("debtleft").textContent = money0(T.left) + " to go";
-    el("debtmonths").textContent = tl ? (tl.months + (tl.months === 1 ? " month" : " months")) : "";
+    var mr = monthsRemaining();
+    el("debtmonths").textContent = mr === null ? "" : (mr + (mr === 1 ? " month" : " months"));
   } else {
     el("freedate").textContent = "No end date";
     el("freesub").textContent = money0(T.perMonth) + " a month, with no last payment set.";
@@ -612,10 +528,9 @@ function renderDebts() {
   el("c-paid").textContent = loaded ? money0(paidNow) : "—";
 
   var box = el("commitlist");
-  if (!loaded) { box.innerHTML = '<div class="kosong"><p class="body">Loading&hellip;</p></div>'; return; }
+  if (!loaded) { box.innerHTML = ""; return; }
   if (!S.commits.length) {
-    box.innerHTML = '<div class="kosong"><div class="tajuk">No commitments yet</div><p class="body">Add each ' +
-      'thing you pay every month with its last payment date, and this works out when you are free of them.</p></div>';
+    box.innerHTML = "";
     return;
   }
   box.innerHTML = S.commits.map(function (c) {
@@ -623,6 +538,8 @@ function renderDebts() {
     var cleared = (n === 0);
     var line;
     if (cleared) line = '<span class="sudah">Finished</span>';
+    else if (c.once) line = '<span class="perlu">' + money0(c.monthly) +
+      ' left</span><span>one payment only</span>';
     else if (n === null) line = '<span class="tetap">Every month · no end</span>';
     else line = '<span class="perlu">' + money0(c.monthly * n) + ' left</span><span>' + n +
       (n === 1 ? " payment" : " payments") + " to go</span>";
@@ -630,12 +547,22 @@ function renderDebts() {
       '"><div class="kepala"><span class="tajuk-p">' +
       esc(c.name) + '</span><span class="kira">' + money0(c.monthly) + "/mo</span></div>" +
       '<div class="baki">' + line +
-      (c.end ? "<span>ends " + esc(dateLabel(c.end)) + "</span>"
-             : '<span class="kecil">leave the date empty to keep it forever</span>') + "</div>" +
-      '<div class="ubah"><label>Per month (RM)<input type="text" inputmode="decimal" value="' +
+      (c.once ? "<span>paid in " + esc(monthLabel(c.once)) + "</span>"
+              : c.end ? "<span>ends " + esc(dateLabel(c.end)) + "</span>"
+                      : "") + "</div>" +
+      '<div class="ubah"><label>' + (c.once ? "Amount (RM)" : "Per month (RM)") +
+      '<input type="text" inputmode="decimal" value="' +
       c.monthly.toFixed(2) + '" data-cmon="' + esc(c.id) + '" aria-label="' + esc(c.name) +
-      ' monthly amount"></label><label>Last payment<input type="date" value="' + esc(c.end || "") +
-      '" data-cend="' + esc(c.id) + '" aria-label="' + esc(c.name) + ' last payment"></label></div>' +
+      ' amount"></label>' +
+      (c.once
+        ? '<label>Month paid<input type="month" value="' + esc(c.once) +
+          '" data-conce="' + esc(c.id) + '" aria-label="' + esc(c.name) +
+          ' month paid"></label>'
+        : '<label>Last payment<input type="date" value="' + esc(c.end || "") +
+          '" data-cend="' + esc(c.id) + '" aria-label="' + esc(c.name) +
+          ' last payment"></label>') +
+      '<label class="sekali"><input type="checkbox" data-ctog="' + esc(c.id) + '"' +
+      (c.once ? " checked" : "") + '>Pay once</label></div>' +
       '<div class="tindakan">' +
       (p ? '<button class="btn kecilbtn" type="button" data-cpay="' + esc(c.id) +
            '">✓ Paid ' + MON[view.getMonth()] + "</button>"
@@ -649,53 +576,118 @@ function renderDebts() {
   }).join("");
 }
 
-function renderSavings() {
-  var T = commitTotals(), sp = avgSpend(), income = S.plan.income || 0;
-  var box = el("plan"), h = "";
-  if (!income) {
-    h = '<p class="lede kecil">Put your take-home pay in above and this works out what you can start with.</p>';
-  } else {
-    var spend = sp ? sp.avg : 0;
-    var spare = income - T.perMonth - spend;
-    var start = spare > 0 ? Math.max(20, Math.floor(spare * 0.5 / 10) * 10) : 0;
-    h = '<div class="kiraan">' +
-      row("Take-home pay", "+ " + money0(income), "tambah") +
-      row("Commitments", "− " + money0(T.perMonth), "tolak") +
-      row(sp ? ("Living costs, " + sp.months + "-month average") : "Living costs (no records yet)",
-          "− " + money0(spend), "tolak") +
-      '<div class="b garis"><span>Spare each month</span><span></span></div></div>';
-    h += '<div class="besar' + (spare > 0 ? "" : " kurang") + '">' + money0(spare) + "</div>";
-    if (spare > 0) {
-      h += '<p class="lede kecil" style="margin-top:var(--space-3)">Start with <b>' + money0(start) +
-        ' a month</b> and leave the rest as breathing room. Moving it the day you are paid works ' +
-        'better than saving what happens to be left at month end.</p>' +
-        '<button class="btn utama kecilbtn" type="button" id="p-startgoal">Set up a buffer goal</button>';
-    } else {
-      h += '<p class="lede kecil" style="margin-top:var(--space-3)">Commitments and living costs already take ' +
-        'everything coming in. Save a small fixed amount anyway, even RM20, so the habit exists, and look ' +
-        'at the categories in Log for the easiest thing to cut.</p>';
-    }
-    if (T.perMonth > 0 && T.lastEnd) {
-      var d = new Date(T.lastEnd + "T00:00:00");
-      var after = new Date(d.getFullYear(), d.getMonth() + 1, 1);
-      h += '<div class="loud" style="margin-top:var(--space-4)">From <b>' + MONTH[after.getMonth()] + " " +
-        after.getFullYear() + '</b>, <b>' + money0(T.perMonth) + ' a month</b> stops leaving your account. ' +
-        'Send that straight to savings and you are putting away ' + money0(T.perMonth) +
-        ' a month without earning a ringgit more.</div>';
-    }
+/* Everything that has actually been moved into savings, month by month —
+   the monthly set-aside and anything put against a goal. It is built from
+   the records, not from the plan, so it only counts what really happened. */
+/* A savings note can name an amount — "RM500 of this is for Umrah" — and
+   that amount is set against what has actually been saved, so the notes
+   add up to a plan for the pot rather than sitting beside it. */
+function amountInNote(text) {
+  var m = String(text).match(/RMs*([0-9][0-9,]*(?:.[0-9]{1,2})?)/i);
+  if (!m) return 0;
+  var n = parseFloat(m[1].replace(/,/g, ""));
+  return isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : 0;
+}
+
+function renderSaved() {
+  var all = S.tx.filter(function (t) { return t.type === "save"; });
+  el("savedbox").hidden = !all.length;
+  if (!all.length) return;
+
+  el("saved-total").textContent = money0(savedSoFar());
+
+  var byMonth = {};
+  all.forEach(function (t) {
+    byMonth[t.month] = (byMonth[t.month] || 0) + t.amount;
+  });
+  var months = Object.keys(byMonth).sort().reverse();
+  var html = '<div class="kiraan" style="margin:var(--space-3) 0 0">' +
+    months.map(function (m) {
+      var d = new Date(m + "-01T00:00:00");
+      return '<div class="b"><span>' + MON[d.getMonth()] + " " + d.getFullYear() +
+        '</span><span class="tambah">+ ' + money0(byMonth[m]) + "</span></div>";
+    }).join("") + "</div>";
+
+  /* what the notes have spoken for, and what is still unspoken for */
+  var spoken = S.notes.map(function (n) { return { text: n.text, amt: amountInNote(n.text) }; })
+                      .filter(function (n) { return n.amt > 0; });
+  if (spoken.length) {
+    var total = savedSoFar();
+    var claimed = spoken.reduce(function (a, n) { return a + n.amt; }, 0);
+    var leftOver = Math.round((total - claimed) * 100) / 100;
+    html += '<div class="kiraan" style="margin-top:var(--space-4)">' +
+      '<div class="pl-tajuk" style="margin:0 0 var(--space-1);padding:0;border:0">Set aside for</div>' +
+      spoken.map(function (n) {
+        /* Her words as written. Cutting the amount out of the middle of a
+           sentence left things like "Keep  untouched as the buffer", so the
+           note is shown whole and the figure sits beside it. */
+        return '<div class="b"><span class="nota-label" title="' + esc(n.text) + '">' +
+          esc(n.text) + '</span><span>' + money0(n.amt) + "</span></div>";
+      }).join("") +
+      '<div class="b garis"><span>' + (leftOver < 0 ? "Over by" : "Not spoken for") +
+      '</span><span class="' + (leftOver < 0 ? "tolak" : "tambah") + '">' +
+      money0(Math.abs(leftOver)) + "</span></div></div>";
   }
-  box.innerHTML = h;
-  var sg = el("p-startgoal");
-  if (sg) sg.onclick = startBuffer;
+  el("saved-list").innerHTML = html;
+}
 
-  renderAhead();
+/* Free text beside the numbers: what the money is meant for, which a goal's
+   name and target cannot always carry. */
+function drawNotes(box, list, attr) {
+  if (!box) return;
+  if (!list.length) { box.innerHTML = ""; return; }
+  box.innerHTML = list.map(function (n) {
+    return '<div class="nota-baris"><span>' + esc(n.text) + "</span>" +
+      '<button class="bil-buang" type="button" ' + attr + '="' + esc(n.id) +
+      '" title="Remove this note" aria-label="Remove this note">' +
+      (I.close || "×") + "</button></div>";
+  }).join("");
+}
+/* A note that names a bill is shown on that bill. Same rule as the category
+   matcher: the name must start on a word boundary, and where two bill names
+   overlap the longer one wins, so "RAM Laptop" does not also flag "Laptop". */
+function tidyName(t) {
+  return " " + String(t).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim() + " ";
+}
+function notesForBill(id) {
+  var me = commitOf(id);
+  if (!me) return [];
+  var mine = tidyName(me.name).trim();
+  if (!mine) return [];
+  return S.logNotes.filter(function (n) {
+    var hay = tidyName(n.text);
+    var at = hay.indexOf(mine);
+    var found = false;
+    while (at !== -1) {
+      if (at === 0 || !/[a-z0-9]/.test(hay.charAt(at - 1))) { found = true; break; }
+      at = hay.indexOf(mine, at + 1);
+    }
+    if (!found) return false;
+    /* if a longer bill name also appears and contains this one, the note
+       belongs to that one instead */
+    return !S.commits.some(function (o) {
+      if (o.id === id) return false;
+      var other = tidyName(o.name).trim();
+      if (other.length <= mine.length) return false;
+      if (other.indexOf(mine) === -1) return false;
+      return hay.indexOf(other) !== -1;
+    });
+  });
+}
 
+function renderNotes() { drawNotes(el("notalist"), S.notes, "data-ndel"); }
+function renderLogNotes() { drawNotes(el("lognotalist"), S.logNotes, "data-lndel"); }
+
+function renderSavings() {
+  renderSaved();
+  renderNotes();
   var gb = el("goallist");
   if (!loaded) {
-    gb.innerHTML = '<div class="kosong"><p class="body">Loading goals&hellip;</p></div>';
+    gb.innerHTML = "";
   } else if (!S.goals.length) {
-    gb.innerHTML = '<div class="kosong"><div class="tajuk">No goals yet</div><p class="body">Set one goal: ' +
-      'a name, an amount and a date. The app works out how much a month that needs.</p></div>';
+    /* Nothing to say until there is a goal. "Add a savings goal" is right
+       underneath, so an empty notice is just something to scroll past. */
+    gb.innerHTML = "";
   } else {
     gb.innerHTML = S.goals.map(function (g) {
       var saved = savedFor(g.id), target = g.target || 0;
@@ -742,139 +734,9 @@ function renderSavings() {
   var last = Object.keys(S.networth).sort().pop();
   el("nw-last").textContent = last ? ("Last recorded " + last + " · " + money0(S.networth[last].net)) : "";
 }
-/* ---------- the months ahead ----------
-   Rolls forward from next month. A commitment ending on 2027-03-31 is still
-   paid in March, so it counts while its month key is at or before the end's.
-   Saving is never projected above what is actually free that month. */
-function project(months) {
-  var income = S.plan.income || 0;
-  var living = livingCost();
-  var aside = S.plan.setAside || 0;
-  var pot = savingsPot();
-  var now = new Date();
-  var from = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  var rows = [];
-  for (var i = 0; i < months; i++) {
-    var d = new Date(from.getFullYear(), from.getMonth() + i, 1);
-    var key = monthKey(d);
-    var due = 0, ending = [];
-    S.commits.forEach(function (c) {
-      if (!c.monthly) return;
-      var endKey = c.end ? c.end.slice(0, 7) : null;
-      if (endKey === null || key <= endKey) {
-        due += c.monthly;
-        if (endKey === key) ending.push(c.name);
-      }
-    });
-    var free = income - due - living;
-    var put = Math.max(0, Math.min(aside, free));
-    pot += put;
-    rows.push({ key: key, d: d, due: due, free: free, put: put, pot: pot, ending: ending });
-  }
-  return rows;
-}
-/* What she has set, or what she has actually been spending. */
-function livingCost() {
-  if (S.plan.living > 0) return S.plan.living;
-  var sp = avgSpend();
-  return sp ? Math.round(sp.avg) : 0;
-}
-function savingsPot() {
-  var n = 0;
-  S.accts.forEach(function (a) { if (a.kind !== "debt") n += a.balance; });
-  return n;
-}
-/* Far enough to show the commitments ending and some life after that. */
-function horizon() {
-  var T = commitTotals();
-  if (!T.lastEnd) return 12;
-  var end = new Date(T.lastEnd + "T00:00:00");
-  var now = new Date();
-  var m = (end.getFullYear() - now.getFullYear()) * 12 + (end.getMonth() - now.getMonth());
-  return Math.min(24, Math.max(12, m + 4));
-}
-
-function renderAhead() {
-  var box = el("hadapan-list");
-  var income = S.plan.income || 0;
-  var hint = el("s-living-hint");
-  var sp = avgSpend();
-  hint.textContent = (S.plan.living > 0 || !sp) ? "" :
-    ("— using your " + sp.months + "-month average");
-
-  if (!income) {
-    box.innerHTML = '<p class="nota kecil">Add what you take home above and the months ahead ' +
-      'appear here.</p>';
-    return;
-  }
-  var rows = project(horizon());
-  var freed = commitTotals().ending;
-  var legend = '<p class="petunjuk">' +
-    '<b>Bills</b> what goes out that month · ' +
-    '<b>To spend</b> what is left after bills and living costs · ' +
-    '<b>Saved</b> what you put aside · ' +
-    '<b>Savings</b> what you have built up by then</p>';
-
-  box.innerHTML = '<div class="hadapan-senarai">' + rows.map(function (r) {
-    var cls = r.free < 0 ? " kurang" : "";
-    var mark = r.ending.length
-      ? '<div class="tanda">' + esc(r.ending.join(", ")) + " " +
-        (r.ending.length === 1 ? "ends" : "end") + " this month · " +
-        money0(r.ending.reduce(function (s, n) {
-          var c = null;
-          S.commits.forEach(function (x) { if (x.name === n) c = x; });
-          return s + (c ? c.monthly : 0);
-        }, 0)) + " a month freed from next month</div>"
-      : "";
-    return '<div class="bulan-baris' + cls + '">' +
-      '<span class="bl">' + MON[r.d.getMonth()] + " " + r.d.getFullYear() + "</span>" +
-      '<span class="kol">' + (r.due > 0 ? "−" + money0(r.due) : "—") + "</span>" +
-      '<span class="kol kiri">' + money0(r.free) + "</span>" +
-      '<span class="kol simpan">' + (r.put > 0 ? "+" + money0(r.put) : "—") + "</span>" +
-      '<span class="kol jumlah">' + money0(r.pot) + "</span>" +
-      mark + "</div>";
-  }).join("") + "</div>";
-
-  var head = '<div class="bulan-baris kepala-baris">' +
-    '<span class="bl">Month</span><span class="kol">Bills</span>' +
-    '<span class="kol kiri">To spend</span><span class="kol simpan">Saved</span>' +
-    '<span class="kol jumlah">Savings</span></div>';
-  box.innerHTML = legend + '<div class="hadapan-senarai">' + head +
-    box.querySelector(".hadapan-senarai").innerHTML + "</div>";
-
-  var last = rows[rows.length - 1];
-  var summary = "";
-  if (!S.plan.setAside) {
-    box.insertAdjacentHTML("beforeend",
-      '<p class="petunjuk" style="margin-top:var(--space-3)">Saved and Savings stay empty ' +
-      'until you put a number in <b>Put aside each month</b> above.</p>');
-  }
-  if (freed > 0) {
-    summary = "Keep this up and you reach <b>" + money0(last.pot) + "</b> by " +
-      MONTH[last.d.getMonth()] + " " + last.d.getFullYear() + ".";
-    if (S.plan.setAside > 0) {
-      summary += " Once the debts are gone you could raise what you put aside to <b>" +
-        money0(S.plan.setAside + freed) + "</b> a month without feeling poorer than you do now.";
-    }
-  } else {
-    summary = "No debts left. What is spare after rent and the usual costs can go to savings.";
-  }
-  box.insertAdjacentHTML("beforeend", '<div class="loud" style="margin-top:var(--space-4)">' + summary + "</div>");
-}
-
 function row(label, value, cls) {
   return '<div class="b"><span>' + esc(label) + '</span><span class="' + cls + '">' + value + "</span></div>";
 }
-function startBuffer() {
-  var T = commitTotals(), sp = avgSpend();
-  var oneMonth = Math.round(((sp ? sp.avg : 0) + T.perMonth) / 50) * 50;
-  if (oneMonth <= 0) { note("Log a month of spending first, so the buffer matches your real costs."); return; }
-  if (goalOf("buffer")) { note("You already have a buffer goal."); return; }
-  var due = new Date(); due.setMonth(due.getMonth() + 12);
-  S.goals.unshift({ id: "buffer", name: "Emergency buffer", target: oneMonth, start: 0, due: ymd(due), ts: Date.now() });
-  save(); render();
-}
-
 function renderSettings() {
   var ex = S.tx.filter(function (t) { return t.example; });
   var exg = S.goals.filter(function (g) { return g.example; });
@@ -951,7 +813,9 @@ el("mnext").innerHTML = I.chevron || "";
 function setTab(k) {
   tab = k;
   /* Settings has nothing that belongs to a month, so the month strip goes. */
-  el("jalur").hidden = (k === "settings");
+  /* Settings has nothing that belongs to a month, so the month and its
+     arrows step back there; the curve and the greeting stay. */
+  el("atas").hidden = (k === "settings");
   ["log", "history", "debts", "savings", "settings"].forEach(function (x) { el("p-" + x).hidden = (x !== k); });
   Array.prototype.forEach.call(el("tabs").children, function (b) {
     b.setAttribute("aria-selected", b.dataset.tab === k ? "true" : "false");
@@ -1001,12 +865,23 @@ el("mnext").onclick = function () { view.setMonth(view.getMonth() + 1); render()
    rebuilt on every render, so the listener sits on the container. */
 el("pl-rows").addEventListener("change", function (ev) {
   /* one of the named bills */
+  var nm = ev.target.closest("input[data-bnm]");
+  if (nm) {
+    var cn = commitOf(nm.dataset.bnm);
+    var text = nm.value.trim();
+    if (cn && text) { cn.name = text; save(); render(); }
+    else if (cn) { nm.value = cn.name; }   /* a bill with no name is not a bill */
+    return;
+  }
   var bil = ev.target.closest("input[data-bil]");
   if (bil) {
     var c = commitOf(bil.dataset.bil);
     if (c) {
       var n = parseAmt(bil.value);
       c.monthly = (isFinite(n) && n >= 0) ? n : 0;
+      /* already ticked as paid? then the record follows the figure */
+      var paid = paidThisMonth(c.id);
+      if (paid) paid.amount = c.monthly;
       save(); render();
     }
     return;
@@ -1016,9 +891,12 @@ el("pl-rows").addEventListener("change", function (ev) {
   var v = parseAmt(inp.value);
   v = (isFinite(v) && v >= 0) ? v : 0;
   if (inp.id === "pf-income") S.plan.income = v;
-  else S.plan.setAside = v;
-  if (el("s-income")) el("s-income").value = S.plan.income ? S.plan.income.toFixed(2) : "";
-  if (el("s-aside")) el("s-aside").value = S.plan.setAside ? S.plan.setAside.toFixed(2) : "";
+  else {
+    S.plan.setAside = v;
+    /* already moved across? then the record follows the plan */
+    var moved = setAsideThisMonth(monthKey(view));
+    if (moved) moved.amount = v;
+  }
   save(); render();
 });
 el("pl-rows").addEventListener("keydown", function (ev) {
@@ -1030,13 +908,18 @@ el("pl-rows").addEventListener("keydown", function (ev) {
 el("pl-rows").addEventListener("click", function (ev) {
   var b = ev.target.closest("button[data-go]");
   if (b) { setTab(b.dataset.go); return; }
+  var bd = ev.target.closest("button[data-bdel]");
+  if (bd) {
+    S.commits = S.commits.filter(function (x) { return x.id !== bd.dataset.bdel; });
+    save(); render();
+    return;
+  }
   var tik = ev.target.closest("button[data-tik]");
   if (tik) {
     togglePaid(tik.dataset.tik);
     return;
   }
   if (ev.target.closest("#pl-add")) {
-    var nama = prompt ? null : null;   /* the viewer swallows prompt(), so ask in the page */
     askForBill();
   }
 });
@@ -1162,13 +1045,34 @@ el("commitlist").addEventListener("change", function (ev) {
     var v = parseAmt(m.value);
     if (!isFinite(v)) return;
     var c = commitOf(m.dataset.cmon);
-    if (c) { c.monthly = v; save(); render(); }
+    if (c) {
+      c.monthly = v;
+      /* already ticked as paid? then the record follows the figure */
+      var cp = paidInMonth(c.id, c.once || monthKey(view));
+      if (cp) cp.amount = v;
+      save(); render();
+    }
     return;
   }
   var e = ev.target.closest("input[data-cend]");
   if (e) {
     var c2 = commitOf(e.dataset.cend);
     if (c2) { c2.end = e.value || ""; save(); render(); }
+    return;
+  }
+  /* Which single month a one-off belongs to. */
+  var o = ev.target.closest("input[data-conce]");
+  if (o) {
+    var c3 = commitOf(o.dataset.conce);
+    if (c3 && o.value) { c3.once = o.value; save(); render(); }
+    return;
+  }
+  /* Pay once, or every month. Turning it on claims the month on screen,
+     since that is the month she is looking at when she pays it. */
+  var tg = ev.target.closest("input[data-ctog]");
+  if (tg) {
+    var c4 = commitOf(tg.dataset.ctog);
+    if (c4) { c4.once = tg.checked ? monthKey(view) : ""; save(); render(); }
   }
 });
 el("commitlist").addEventListener("click", function (ev) {
@@ -1197,31 +1101,6 @@ el("commitlist").addEventListener("click", function (ev) {
     S.commits = S.commits.filter(function (x) { return x.id !== del.dataset.cdel; });
     save(); render();
   }
-});
-
-el("s-income").addEventListener("change", function () {
-  var v = parseAmt(el("s-income").value);
-  S.plan.income = isFinite(v) ? v : 0;
-  save(); render();
-});
-/* Kept as an asset account rather than a second stored number, so it feeds
-   net worth and cannot drift out of step with it. */
-el("s-saved").addEventListener("change", function () {
-  var v = parseAmt(el("s-saved").value);
-  if (!isFinite(v) || v < 0) return;
-  var acct = null;
-  S.accts.forEach(function (a) { if (a.name === "Savings") acct = a; });
-  if (acct) acct.balance = v;
-  else if (v > 0) S.accts.push({ id: uid(), name: "Savings", kind: "asset", balance: v, ts: Date.now() });
-  save(); render();
-});
-["s-living", "s-aside"].forEach(function (id) {
-  var key = (id === "s-living") ? "living" : "setAside";
-  el(id).addEventListener("change", function () {
-    var v = parseAmt(el(id).value);
-    S.plan[key] = (isFinite(v) && v >= 0) ? v : 0;
-    save(); render();
-  });
 });
 
 el("g-add").onclick = function () {
@@ -1253,6 +1132,40 @@ el("goallist").addEventListener("click", function (ev) {
     S.goals = S.goals.filter(function (x) { return x.id !== del.dataset.gdel; });
     save(); render();
   }
+});
+
+el("lognota-add").onclick = function () {
+  var t = el("lognota-teks").value.trim();
+  if (!t) { el("lognota-teks").focus(); return; }
+  S.logNotes.push({ id: uid(), text: t.slice(0, 255) });
+  el("lognota-teks").value = "";
+  save(); render();
+};
+el("lognota-teks").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") { e.preventDefault(); el("lognota-add").click(); }
+});
+el("lognotalist").addEventListener("click", function (ev) {
+  var b = ev.target.closest("button[data-lndel]");
+  if (!b) return;
+  S.logNotes = S.logNotes.filter(function (n) { return n.id !== b.dataset.lndel; });
+  save(); render();
+});
+
+el("nota-add").onclick = function () {
+  var t = el("nota-teks").value.trim();
+  if (!t) { el("nota-teks").focus(); return; }
+  S.notes.push({ id: uid(), text: t.slice(0, 255) });
+  el("nota-teks").value = "";
+  save(); render();
+};
+el("nota-teks").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") { e.preventDefault(); el("nota-add").click(); }
+});
+el("notalist").addEventListener("click", function (ev) {
+  var b = ev.target.closest("button[data-ndel]");
+  if (!b) return;
+  S.notes = S.notes.filter(function (n) { return n.id !== b.dataset.ndel; });
+  save(); render();
 });
 
 el("a-add").onclick = function () {
@@ -1313,9 +1226,33 @@ el("ex-clear").onclick = function () {
 /* The title greets whoever is signed in. Without accounts it is just the
    app's name, so the header never says "Welcome undefined". */
 window.addEventListener("ll:signedin", function (e) {
-  var who = e.detail && e.detail.name ? String(e.detail.name).trim().split(/s+/)[0] : "";
-  if (who) el("appname").textContent = "Welcome " + who + " to Little Ledger";
+  var who = e.detail && e.detail.name ? String(e.detail.name).trim().split(/\s+/)[0] : "";
+  if (who) { whoName = who; render(); }
 });
+
+/* ---------- appearance ----------
+   "auto" follows the phone; the other two override it. The choice is a
+   per-device preference, so it lives in this browser rather than the
+   ledger — the same account on a laptop can be light and dark on a phone. */
+function applyTema(choice) {
+  var root = document.documentElement;
+  if (choice === "dark") root.setAttribute("data-theme", "dark");
+  else if (choice === "light") root.setAttribute("data-theme", "light");
+  else root.removeAttribute("data-theme");
+  Array.prototype.forEach.call(el("tema").children, function (b) {
+    b.classList.toggle("on", b.dataset.tema === choice);
+  });
+}
+function temaNow() {
+  try { return localStorage.getItem("ll.tema") || "auto"; } catch (e) { return "auto"; }
+}
+el("tema").addEventListener("click", function (ev) {
+  var b = ev.target.closest("button[data-tema]");
+  if (!b) return;
+  try { localStorage.setItem("ll.tema", b.dataset.tema); } catch (e) { }
+  applyTema(b.dataset.tema);
+});
+applyTema(temaNow());
 
 /* ---------- boot ---------- */
 try { var t0 = localStorage.getItem("ll.tab"); if (t0) tab = t0; } catch (e) { }
@@ -1338,20 +1275,23 @@ function boot(d) {
   });
   S.commits = (Array.isArray(d.commits) ? d.commits : []).map(function (o) {
     return { id: o.id || uid(), name: o.name || "Commitment", monthly: +o.monthly || 0,
-             cat: o.cat || "Commitments", end: o.end || "", ts: +o.ts || 0 };
+             cat: o.cat || "Commitments", end: o.end || "", once: o.once || "",
+             ts: +o.ts || 0 };
   });
   S.accts = (Array.isArray(d.accts) ? d.accts : []).map(function (o) {
     return { id: o.id || uid(), name: o.name || "Account", kind: o.kind === "debt" ? "debt" : "asset",
              balance: +o.balance || 0, ts: +o.ts || 0 };
   });
   S.networth = (d.networth && typeof d.networth === "object") ? d.networth : {};
+  S.logNotes = (Array.isArray(d.logNotes) ? d.logNotes : [])
+    .filter(function (n) { return n && n.id && n.text; })
+    .map(function (n) { return { id: String(n.id), text: String(n.text) }; });
+  S.notes = (Array.isArray(d.notes) ? d.notes : [])
+    .filter(function (n) { return n && n.id && n.text; })
+    .map(function (n) { return { id: String(n.id), text: String(n.text) }; });
   S.plan = (d.plan && typeof d.plan === "object")
     ? { income: +d.plan.income || 0, setAside: +d.plan.setAside || 0, living: +d.plan.living || 0 }
     : { income: 0, setAside: 0, living: 0 };
-  if (S.plan.income) el("s-income").value = S.plan.income.toFixed(2);
-  if (S.plan.living) el("s-living").value = S.plan.living.toFixed(2);
-  if (S.plan.setAside) el("s-aside").value = S.plan.setAside.toFixed(2);
-  S.accts.forEach(function (a) { if (a.name === "Savings") el("s-saved").value = a.balance.toFixed(2); });
   loaded = true;
   note("");
   setSaved("Kept in this browser.");

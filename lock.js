@@ -296,6 +296,10 @@ function open() {
   if (LL.name && el("appname")) {
     el("appname").textContent = "Welcome " + LL.name.split(/\s+/)[0] + " to Little Ledger";
   }
+  /* The greeting lives in the calendar header now, which listens for this. */
+  if (LL.name) {
+    window.dispatchEvent(new CustomEvent("ll:signedin", { detail: { name: LL.name } }));
+  }
   window.dispatchEvent(new CustomEvent("ll:unlocked"));
 }
 

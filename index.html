@@ -6,10 +6,10 @@
 <title>Little Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
-<link rel="stylesheet" href="tokens.css?v=202610310830">
-<link rel="stylesheet" href="patterns.css?v=202610310830">
-<link rel="stylesheet" href="app.css?v=202610310830">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="tokens.css?v=202611031203">
+<link rel="stylesheet" href="patterns.css?v=202611031203">
+<link rel="stylesheet" href="app.css?v=202611031203">
 </head>
 <body>
 
@@ -56,15 +56,19 @@
 </section>
 
 <div class="app">
-  <header class="atas">
-    <h1 class="nama" id="appname">Little Ledger</h1>
-  </header>
-
-  <div class="jalur-bulan" id="jalur">
-    <button class="ikon sm" id="mprev" type="button" title="Previous month" aria-label="Previous month"></button>
-    <span class="lbl" id="mlbl">&nbsp;</span>
-    <button class="ikon sm" id="mnext" type="button" title="Next month" aria-label="Next month"></button>
-  </div>
+    <header class="atas" id="atas">
+      <div class="kal-tajuk-app">Little Ledger</div>
+      <div class="kal-kad">
+        <button class="kal-nav" id="mprev" type="button"
+                title="Previous month" aria-label="Previous month"></button>
+        <div class="kal-tengah">
+          <div class="kal-salam" id="kal-salam"></div>
+          <div class="kal-bulan" id="mlbl">&nbsp;</div>
+        </div>
+        <button class="kal-nav" id="mnext" type="button"
+                title="Next month" aria-label="Next month"></button>
+      </div>
+    </header>
 
   <main>
     <div id="bootnote" class="amaran" hidden></div>
@@ -93,10 +97,15 @@
       </form>
 
 
-      <section class="kad ideas" id="ideas" hidden>
-        <span class="label">Making it last</span>
-        <div id="idea-list"></div>
-      </section>
+      <div class="kad" id="lognotabox">
+        <span class="label">Notes</span>
+        <div id="lognotalist"></div>
+        <div class="nota-tambah">
+          <input id="lognota-teks" type="text" maxlength="255" autocomplete="off"
+                 placeholder="e.g. Grab ends 7 Nov, last payment">
+          <button class="btn kecilbtn" id="lognota-add" type="button">Add</button>
+        </div>
+      </div>
 
       <div class="kad">
         <span class="label">Spending by category</span>
@@ -149,46 +158,20 @@
 
     <!-- SAVINGS -->
     <section id="p-savings" class="pane" hidden>
-      <div class="panel">
-        <span class="label">Where to start</span>
-        <div class="mula">
-          <div class="mula-baris">
-            <div class="wang"><span class="rm">RM</span>
-              <input id="s-income" type="text" inputmode="decimal" placeholder="0.00"
-                     autocomplete="off" aria-label="Monthly take-home pay"></div>
-            <label class="apa" for="s-income">What you take home each month</label>
-          </div>
-          <div class="mula-baris">
-            <div class="wang"><span class="rm">RM</span>
-              <input id="s-saved" type="text" inputmode="decimal" placeholder="0.00"
-                     autocomplete="off" aria-label="Savings you already have"></div>
-            <label class="apa" for="s-saved">Savings you already have</label>
-          </div>
-        </div>
-        <div id="plan"></div>
+      <div class="panel simpanan-jumlah" id="savedbox" hidden>
+        <span class="label">Saved so far</span>
+        <div class="besar" id="saved-total">&mdash;</div>
+        <div id="saved-list"></div>
       </div>
 
-      <div class="panel" id="hadapan">
-        <span class="label">The months ahead</span>
-        <p class="lede kecil">One row per month from next month on. It answers one question:
-          <b>when does this get easier?</b> Each row shows what goes out, what is left, and
-          what you would have saved by then — and the line under a month names the
-          commitment that ends there.</p>
-        <div class="mula">
-          <div class="mula-baris">
-            <div class="wang"><span class="rm">RM</span>
-              <input id="s-living" type="text" inputmode="decimal" placeholder="0.00"
-                     autocomplete="off" aria-label="Living costs each month"></div>
-            <label class="apa" for="s-living">Living costs each month <i id="s-living-hint"></i></label>
-          </div>
-          <div class="mula-baris">
-            <div class="wang"><span class="rm">RM</span>
-              <input id="s-aside" type="text" inputmode="decimal" placeholder="0.00"
-                     autocomplete="off" aria-label="Put aside each month"></div>
-            <label class="apa" for="s-aside">Put aside each month</label>
-          </div>
+      <div class="kad" id="notabox">
+        <span class="label">Notes</span>
+        <div id="notalist"></div>
+        <div class="nota-tambah">
+          <input id="nota-teks" type="text" maxlength="255" autocomplete="off"
+                 placeholder="e.g. RM500 of this is for Umrah deposit">
+          <button class="btn kecilbtn" id="nota-add" type="button">Add</button>
         </div>
-        <div id="hadapan-list"></div>
       </div>
 
       <div id="goallist"><div class="kosong"><p class="body">Loading goals&hellip;</p></div></div>
@@ -243,6 +226,15 @@
           <button class="btn kecilbtn" id="lock" type="button">Lock now</button>
         </div>
         <input type="file" id="restore-file" accept="application/json,.json" hidden>
+      </div>
+
+      <div class="kad">
+        <span class="label">Appearance</span>
+        <div class="tema-pilih" id="tema" role="group" aria-label="Appearance">
+          <button class="tema-btn" type="button" data-tema="light">Light</button>
+          <button class="tema-btn" type="button" data-tema="dark">Dark</button>
+          <button class="tema-btn" type="button" data-tema="auto">Match my phone</button>
+        </div>
       </div>
 
       <div class="kad" id="exbox" hidden>
@@ -326,10 +318,10 @@
   </section>
 </div>
 
-<script src="icons.js?v=202610310830"></script>
-<script src="icons-extra.js?v=202610310830"></script>
-<script src="lock.js?v=202610310830"></script>
-<script src="app.js?v=202610310830"></script>
-<script src="calc.js?v=202610310830"></script>
+<script src="icons.js?v=202611031203"></script>
+<script src="icons-extra.js?v=202611031203"></script>
+<script src="lock.js?v=202611031203"></script>
+<script src="app.js?v=202611031203"></script>
+<script src="calc.js?v=202611031203"></script>
 </body>
 </html>
